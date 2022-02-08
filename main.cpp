@@ -6,7 +6,7 @@
 /*   By: eoddish <eoddish@student.21-school>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/07 19:08:23 by eoddish           #+#    #+#             */
-/*   Updated: 2022/02/07 19:37:30 by eoddish          ###   ########.fr       */
+/*   Updated: 2022/02/08 20:14:49 by eoddish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,6 +30,9 @@ int main( int argc, char **argv ) {
 
 	std::cout <<  "port: " << srv.getPort();
 	std::cout <<  " " << "password: " << srv.getPassword() << std::endl;
+
+	//srv._functions["time"] =  &srv.ft_time;
+	srv.parse(  );
 
 	return 0;
 }
