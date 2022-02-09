@@ -6,13 +6,37 @@
 /*   By: eoddish <eoddish@student.21-school>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/07 19:29:59 by eoddish           #+#    #+#             */
-/*   Updated: 2022/02/08 20:43:39 by eoddish          ###   ########.fr       */
+/*   Updated: 2022/02/09 19:28:39 by eoddish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Server.hpp"
-#include <sys/socket.h>
 
+Server::Server( ) : _port( 0 ), _password( "default" ), _name( "ircserv" ) {
+
+	_functions["time"] =  &Server::ft_time;
+}
+
+Server::Server( Server const & other ) {
+
+	*this = other;
+}
+
+Server::~Server( ) {
+
+}
+
+Server & Server::operator=( Server const & other ) {
+
+	if ( this != &other ) {
+
+		_port = other._port;
+		_password = other._password;
+		_name = other._name;
+	}
+
+	return *this;
+}
 
 int Server::getPort( void ) const {
 
@@ -34,21 +58,21 @@ void Server::setPassword( std::string password ) {
 	_password = password;
 }
 
-void  Server::ft_time( void ){	
+void  Server::ft_time( void ) {	
 
 	time_t rawtime;
 	time ( &rawtime );
 
 	std::string t = ctime( &rawtime );
 
-	std::cout << t;  
+	std::cout << this->_name << " ";
+	std::cout << t;
 
 }
 
 
 void Server::parse() {
 
-	_functions["time"] =  &Server::ft_time;
 
 	std::string str;
 	std::vector<std::string> vct;
@@ -77,13 +101,54 @@ void Server::parse() {
 
 	vct[0] = ft_tolower( vct[0] );
 
-	/*
-	for ( std::vector<std::string>::iterator it = vct.begin(); it != vct.end(); ++it ) {
 
-		std::cout << *it << std::endl;
-	}	
-	*/
-	_functions[vct[0]]();
+	if ( _functions.find( vct[0] ) == _functions.end() ) {
+
+		std::cerr << vct[0];
+		PrintError( 421 );
+		return;
+	}
+
+	(this->*_functions[vct[0]])();
+}
+
+void Server::ft_socket() {
+
+	int server_sock;
+	struct sockaddr_in server_addr, client_addr;
+	socklen_t client_addr_size;
+
+	server_sock = socket( AF_INET, SOCK_STREAM, 0 );
+	if ( server_sock < 0 )
+		std::cout << "Socket error" << std::endl; 
+
+	server_addr.sin_family = AF_INET;
+	server_addr.sin_port = htons( _port );
+	server_addr.sin_addr.s_addr = inet_addr( "127.0.0.1" );
+
+
+	if ( bind( server_sock, ( struct sockaddr * ) & server_addr, sizeof( server_addr ) ) != 0 )
+		std::cout << "Bind error" << std::endl;
+
+	if ( listen( server_sock, 3 ) != 0 )
+		std::cout << "Listen error" << std::endl;
+
+
+	client_addr_size = sizeof( client_addr );
+
+	while ( 1 ) {
+		accept( server_sock, ( struct sockaddr * ) & client_addr, & client_addr_size );
+
+		std::cout << "Connection established" << std::endl;
+		std::string ip = inet_ntoa ( client_addr.sin_addr );
+
+
+		std::cout << "Connection established with ip " << ip << std::endl;
+
+
+		
+	}
+
 }
 
 std::vector<std::string> & Server::ft_split( std::string & str, std::vector<std::string> & vct ) {

@@ -6,13 +6,14 @@
 /*   By: eoddish <eoddish@student.21-school>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/07 19:08:23 by eoddish           #+#    #+#             */
-/*   Updated: 2022/02/08 20:14:49 by eoddish          ###   ########.fr       */
+/*   Updated: 2022/02/09 16:37:36 by eoddish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <cstdlib>
 #include <iostream>
 #include "Server.hpp"
+#include "ErrorMess.hpp"
 
 
 int main( int argc, char **argv ) {
@@ -28,11 +29,8 @@ int main( int argc, char **argv ) {
 	srv.setPort( atoi( argv[1] ) );
 	srv.setPassword( argv[2] );
 
-	std::cout <<  "port: " << srv.getPort();
-	std::cout <<  " " << "password: " << srv.getPassword() << std::endl;
-
-	//srv._functions["time"] =  &srv.ft_time;
-	srv.parse(  );
+	srv.ft_socket();
+	srv.parse( );
 
 	return 0;
 }

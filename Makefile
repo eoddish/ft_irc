@@ -6,13 +6,13 @@
 #    By: eoddish <eoddish@student.21-school>        +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/02/07 19:07:21 by eoddish           #+#    #+#              #
-#    Updated: 2022/02/07 19:42:49 by eoddish          ###   ########.fr        #
+#    Updated: 2022/02/09 15:19:43 by eoddish          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 NAME		= ircserv
 
-SRCS		= main.cpp Server.cpp
+SRCS		= main.cpp Server.cpp ErrorMess.cpp
 
 OBJS		= $(SRCS:.cpp=.o)
 
