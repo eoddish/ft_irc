@@ -6,7 +6,7 @@
 /*   By: eoddish <eoddish@student.21-school>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/07 19:29:59 by eoddish           #+#    #+#             */
-/*   Updated: 2022/02/09 19:28:39 by eoddish          ###   ########.fr       */
+/*   Updated: 2022/02/10 21:01:44 by eoddish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,7 +71,7 @@ void  Server::ft_time( void ) {
 }
 
 
-void Server::parse() {
+void Server::parse(  ) {
 
 
 	std::string str;
@@ -115,39 +115,123 @@ void Server::parse() {
 void Server::ft_socket() {
 
 	int server_sock;
+	int ret;
+	int option = 1;
+	int timeout;
+
 	struct sockaddr_in server_addr, client_addr;
 	socklen_t client_addr_size;
+	char buf1[512];
+	char buf2[512];
+	struct pollfd fds[200];
+	int nfds = 1;
 
+	// create a socket
 	server_sock = socket( AF_INET, SOCK_STREAM, 0 );
-	if ( server_sock < 0 )
-		std::cout << "Socket error" << std::endl; 
+	if ( server_sock < 0 ) {
 
+		perror( "socket() error" );
+		exit( -1 );
+	}
+
+	// allow reusing
+	ret = setsockopt( server_sock, SOL_SOCKET, SO_REUSEADDR, ( char * ) & option, sizeof( option ) );
+	if ( ret < 0 ) {
+
+		perror( "setsockopt() error" );
+		close( server_sock );
+		exit( -1 );
+	}
+
+	// set to non-blocking
+	ret = fcntl( server_sock, F_SETFL, O_NONBLOCK );
+	if ( ret < 0 ) {
+
+		perror( "fcntl() error" );
+		close( server_sock );
+		exit( -1 );
+	}
+
+	// bind the socket
+	memset( &server_addr, 0, sizeof( server_addr ) );
 	server_addr.sin_family = AF_INET;
+//	memcpy( &server_addr.sin_addr, &inaddr_any, sizeof( inaddr_any ) );
 	server_addr.sin_port = htons( _port );
-	server_addr.sin_addr.s_addr = inet_addr( "127.0.0.1" );
+//	server_addr.sin_addr.s_addr = inet_addr( "127.0.0.1" );
+	server_addr.sin_addr.s_addr = INADDR_ANY;
+	ret = bind( server_sock, ( struct sockaddr * ) & server_addr, sizeof( server_addr ) );
+	if ( ret < 0 ) {
 
+		perror( "bind() error" );
+		close( server_sock );
+		exit( -1 );
+	}
 
-	if ( bind( server_sock, ( struct sockaddr * ) & server_addr, sizeof( server_addr ) ) != 0 )
-		std::cout << "Bind error" << std::endl;
+	// listen
+	ret = listen( server_sock, 128 ); 
+	if ( ret < 0 ) {
 
-	if ( listen( server_sock, 3 ) != 0 )
-		std::cout << "Listen error" << std::endl;
+		perror( "listen() error" );
+		close( server_sock );
+		exit( -1 );
+	}
+
+	// set up socket
+	memset( fds, 0, sizeof( fds ) );
+	fds[0].fd = server_sock;
+	fds[0].events = POLLIN;
+	timeout = 3 * 60 * 1000;
+
 
 
 	client_addr_size = sizeof( client_addr );
 
-	while ( 1 ) {
-		accept( server_sock, ( struct sockaddr * ) & client_addr, & client_addr_size );
+	do {
+
+
+		// call poll
+		ret = poll( fds, nfds, timeout );
+		if ( ret < 0 ) {
+
+			perror( "poll() error" );
+			break;
+		}
+
+		if ( ret == 0 )
+
+		int fd = accept( server_sock, ( struct sockaddr * ) & client_addr, & client_addr_size );
 
 		std::cout << "Connection established" << std::endl;
-		std::string ip = inet_ntoa ( client_addr.sin_addr );
+		std::string ip = inet_ntoa( client_addr.sin_addr );
+		unsigned short port = ntohs( client_addr.sin_port ); 
 
 
-		std::cout << "Connection established with ip " << ip << std::endl;
+		std::cout << "Connection established with ip " << ip;
+		std::cout << " and port " << port << std::endl;
 
-
+		recv( fd, buf1, 512, 0 );
+		std::cout << buf1;	
 		
-	}
+		std::string _nick = "eoddish";
+
+		std::string sendline = "001 ";
+		sendline.append( _nick );
+		sendline.append( " :Welcome to the Internet Relay Network " );
+		sendline.append( _nick );
+		sendline.append( "\n" );
+
+		strcpy( buf2, sendline.c_str() );
+		send( fd, buf2, 512, 0 );
+
+		recv( fd, buf1, 512, 0 );
+		std::cout << buf1;
+
+		recv( fd, buf1, 512, 0 );
+		std::cout << buf1;
+	
+		
+		//parse();
+	} while ( true );
 
 }
 
