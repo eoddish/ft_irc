@@ -6,7 +6,7 @@
 /*   By: eoddish <eoddish@student.21-school>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/07 19:27:07 by eoddish           #+#    #+#             */
-/*   Updated: 2022/02/10 21:01:46 by eoddish          ###   ########.fr       */
+/*   Updated: 2022/02/11 19:24:16 by eoddish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,6 +22,7 @@
 #include <unistd.h>
 #include <fcntl.h>
 #include <poll.h>
+#include <sstream>
 
 
 class Server {
@@ -45,19 +46,22 @@ public:
 
 	// Engine
 	
-	void parse();
+	std::string parse( std::string input );
 	void ft_socket();
 
 	// Commands
 	
-	void ft_time();
+	std::string ft_cap( std::vector<std::string> & vct );
+	std::string ft_time( std::vector<std::string> & vct );
+	std::string ft_ping( std::vector<std::string> & vct );
+	std::string ft_mode( std::vector<std::string> & vct );
 
 
 protected:
 
 	// Types
 
-	typedef void (Server::*func)( void );
+	typedef std::string (Server::*func)( std::vector<std::string> & );
 
 	// Members
 	

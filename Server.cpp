@@ -6,7 +6,7 @@
 /*   By: eoddish <eoddish@student.21-school>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/07 19:29:59 by eoddish           #+#    #+#             */
-/*   Updated: 2022/02/11 16:18:58 by eoddish          ###   ########.fr       */
+/*   Updated: 2022/02/11 21:12:50 by eoddish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,9 @@
 Server::Server( ) : _port( 0 ), _password( "default" ), _name( "ircserv" ) {
 
 	_functions["time"] =  &Server::ft_time;
+	_functions["ping"] =  &Server::ft_ping;
+	_functions["cap"] = &Server::ft_cap;
+	_functions["mode"] = &Server::ft_mode;
 }
 
 Server::Server( Server const & other ) {
@@ -58,29 +61,56 @@ void Server::setPassword( std::string password ) {
 	_password = password;
 }
 
-void  Server::ft_time( void ) {	
+std::string  Server::ft_mode( std::vector<std::string> & vct ) {	
+
+	std::cout << vct[0] << std::endl; 
+	return "";
+}
+
+std::string  Server::ft_time( std::vector<std::string> & vct ) {	
+
+	std::cout << vct[0] << std::endl;
 
 	time_t rawtime;
 	time ( &rawtime );
 
-	std::string t = ctime( &rawtime );
+	std::string res;
+	//res.append( "391 " );
+	res.append( "127.0.0.1" );
+	res.append( " :" );
+	res.append( ctime( &rawtime ) );
+	res.append( "\n" );
 
-	std::cout << this->_name << " ";
-	std::cout << t;
+	return res;
+}
 
+std::string Server::ft_ping( std::vector<std::string> & vct ) {
+
+	std::string res = "PONG ";
+	res.append( vct[1] );
+
+	return res;
 }
 
 
-void Server::parse(  ) {
+std::string Server::ft_cap( std::vector<std::string> & vct ) {
 
+	std::cout << vct[0] << std::endl;
 
-	std::string str;
+	std::string _nick = "eoddish";
+	std::string sendline = "001 ";
+	sendline.append( _nick );
+	sendline.append( " :Welcome to the Internet Relay Network " );
+	sendline.append( _nick );
+	sendline.append( "\n" );
+
+	return sendline;
+}
+
+std::string Server::parse( std::string str ) {
+
+	
 	std::vector<std::string> vct;
-
-
-	std::getline( std::cin, str );
-	if ( str.size() > 510 )
-		return;
 
 	// CHECK IF THERE'S A PREFIX 
 	if ( str[0] == ':' ) {
@@ -93,23 +123,21 @@ void Server::parse(  ) {
 
 		str.erase( 0, str.find(" ") );
 	}
-		
 
 	vct = ft_split( str, vct );
-	if ( vct.size() > 16 )
-		return;
+	//if ( vct.size() > 16 )
+	//	return;
 
 	vct[0] = ft_tolower( vct[0] );
 
-
 	if ( _functions.find( vct[0] ) == _functions.end() ) {
 
-		std::cerr << vct[0];
-		PrintError( 421 );
-		return;
+		std::string res = vct[0];
+		res.append( PrintError( 421 ) );
+		return res.append ( "\n" ); 
 	}
 
-	(this->*_functions[vct[0]])();
+		return (this->*_functions[vct[0]])( vct );
 }
 
 void Server::ft_socket() {
@@ -271,28 +299,30 @@ void Server::ft_socket() {
 					len = ret;
 					std::cout << buf;
 
+					std::istringstream iss( buf );
+					std::string str;
+
+					while ( std::getline( iss, str ) ) {
+
+					str.erase( str.end() - 1 );
+					
+					std::string sendline = parse( str );
+
+
 					// send data
 
-					bzero( buf, sizeof( buf ) );
+					char buf2[512];
+					bzero( buf2, sizeof( buf2 ) );
+					strcpy( buf2, sendline.c_str() );
 
-					std::string _nick = "eoddish";
-					std::string sendline = "001 ";
-					sendline.append( _nick );
-					sendline.append( " :Welcome to the Internet Relay Network " );
-					sendline.append( _nick );
-					sendline.append( "\n" );
-
-					strcpy( buf, sendline.c_str() );
-
-					std::cout << "$$$" << std::endl;
-
-					ret = send( fds[i].fd, buf, sizeof( buf ), 0 );
+					ret = send( fds[i].fd, buf2, sizeof( buf2 ), 0 );
 					if ( ret < 0 ) {
 
 						perror( "send() error" );
 						close_conn = true;
 						break;
 					}
+				}
 
 				} while ( true );
 
@@ -335,7 +365,6 @@ void Server::ft_socket() {
 			close( fds[i].fd );
 	}
 
-	//parse();
 
 }
 

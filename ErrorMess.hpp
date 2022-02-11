@@ -6,7 +6,7 @@
 /*   By: nagrivan <nagrivan@21-school.ru>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/08 15:30:09 by nagrivan          #+#    #+#             */
-/*   Updated: 2022/02/08 17:02:48 by nagrivan         ###   ########.fr       */
+/*   Updated: 2022/02/11 18:05:18 by eoddish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,4 +59,4 @@
 # define ERR_UMODEUNKNOWNFLAG	501
 # define ERR_USERSDONTMATCH		502
 
-void	PrintError(int CodeError);
+std::string	PrintError(int CodeError);

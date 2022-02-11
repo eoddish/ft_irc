@@ -6,7 +6,7 @@
 /*   By: eoddish <eoddish@student.21-school>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/07 19:08:23 by eoddish           #+#    #+#             */
-/*   Updated: 2022/02/09 16:37:36 by eoddish          ###   ########.fr       */
+/*   Updated: 2022/02/11 19:32:48 by eoddish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,7 +30,7 @@ int main( int argc, char **argv ) {
 	srv.setPassword( argv[2] );
 
 	srv.ft_socket();
-	srv.parse( );
+//	srv.parse( );
 
 	return 0;
 }

@@ -6,149 +6,152 @@
 /*   By: nagrivan <nagrivan@21-school.ru>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/08 16:42:09 by nagrivan          #+#    #+#             */
-/*   Updated: 2022/02/09 15:45:39 by eoddish          ###   ########.fr       */
+/*   Updated: 2022/02/11 18:08:26 by eoddish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ErrorMess.hpp"
 
-void	PrintError(int CodeError) {
+std::string	PrintError(int CodeError) {
+
+	std::string result;
 	switch (CodeError)
 	{
 	case ERR_NOSUCHNICK:
-		std::cerr << "<nickname> :No such nick/channel" << std::endl;
+		result = "<nickname> :No such nick/channel";
 		break;
 	case ERR_NOSUCHSERVER:
-		std::cerr << "<server name> :No such server" << std::endl;
+		result = "<server name> :No such server";
 		break;
 	case ERR_NOSUCHCHANNEL:
-		std::cerr << "<channel name> :No such channel" << std::endl;
+		result = "<channel name> :No such channel";
 		break;
 	case ERR_CANNOTSENDTOCHAN:
-		std::cerr << "<channel name> :Cannot send to channel" << std::endl;
+		result = "<channel name> :Cannot send to channel";
 		break;
 	case ERR_TOOMANYCHANNELS:
-		std::cerr << "<channel name> :You have joined too many channels" << std::endl;
+		result = "<channel name> :You have joined too many channels";
 		break;
 	case ERR_WASNOSUCHNICK:
-		std::cerr << "<nickname> :There was no such nickname" << std::endl;
+		result = "<nickname> :There was no such nickname";
 		break;
 	case ERR_TOOMANYTARGETS:
-		std::cerr << "<target> :Duplicate recipients. No message delivered" << std::endl;
+		result = "<target> :Duplicate recipients. No message delivered";
 		break;
 	case ERR_NOORIGIN:
-		std::cerr << ":No origin specified" << std::endl;
+		result = ":No origin specified";
 		break;
 	case ERR_NORECIPIENT:
-		std::cerr << ":No recipient given (<command>)" << std::endl;
+		result = ":No recipient given (<command>)";
 		break;
 	case ERR_NOTEXTTOSEND:
-		std::cerr << ":No text to send" << std::endl;
+		result = ":No text to send";
 		break;
 	case ERR_NOTOPLEVEL:
-		std::cerr << "<mask> :No toplevel domain specified" << std::endl;
+		result = "<mask> :No toplevel domain specified";
 		break;
 	case ERR_WILDTOPLEVEL:
-		std::cerr << "<mask> :Wildcard in toplevel domain" << std::endl;
+		result = "<mask> :Wildcard in toplevel domain";
 		break;
 	case ERR_UNKNOWNCOMMAND:
-		std::cerr << " :Unknown command" << std::endl;
+		result = " :Unknown command";
 		break;
 	case ERR_NOMOTD:
-		std::cerr << ":MOTD File is missing" << std::endl;
+		result = ":MOTD File is missing";
 		break;
 	case ERR_NOADMININFO:
-		std::cerr << "<server> :No administrative info available" << std::endl;
+		result = "<server> :No administrative info available";
 		break;
 	case ERR_FILEERROR:
-		std::cerr << ":File error doing <file op> on <file>" << std::endl;
+		result = ":File error doing <file op> on <file>";
 		break;
 	case ERR_NONICKNAMEGIVEN:
-		std::cerr << ":No nickname given" << std::endl;
+		result = ":No nickname given";
 		break;
 	case ERR_ERRONEUSNICKNAME:
-		std::cerr << "<nick> :Erroneus nickname" << std::endl;
+		result = "<nick> :Erroneus nickname";
 		break;
 	case ERR_NICKNAMEINUSE:
-		std::cerr << "<nick> :Nickname is already in use" << std::endl;
+		result = "<nick> :Nickname is already in use";
 		break;
 	case ERR_NICKCOLLISION:
-		std::cerr << "<nick> :Nickname collision KILL" << std::endl;
+		result = "<nick> :Nickname collision KILL";
 		break;
 	case ERR_USERNOTINCHANNEL:
-		std::cerr << "<nick> <channel> :They aren't on that channel" << std::endl;
+		result = "<nick> <channel> :They aren't on that channel";
 		break;
 	case ERR_NOTONCHANNEL:
-		std::cerr << "<channel> :You're not on that channel" << std::endl;
+		result = "<channel> :You're not on that channel";
 		break;
 	case ERR_USERONCHANNEL:
-		std::cerr << "<user> <channel> :is already on channel" << std::endl;
+		result = "<user> <channel> :is already on channel";
 		break;
 	case ERR_NOLOGIN:
-		std::cerr << "<user> :User not logged in" << std::endl;
+		result = "<user> :User not logged in";
 		break;
 	case ERR_SUMMONDISABLED:
-		std::cerr << ":SUMMON has been disabled" << std::endl;
+		result = ":SUMMON has been disabled";
 		break;
 	case ERR_USERSDISABLED:
-		std::cerr << ":USERS has been disabled" << std::endl;
+		result = ":USERS has been disabled";
 		break;
 	case ERR_NOTREGISTERED:
-		std::cerr << ":You have not registered" << std::endl;
+		result = ":You have not registered";
 		break;
 	case ERR_NEEDMOREPARAMS:
-		std::cerr << "<command> :Not enough parameters" << std::endl;
+		result = "<command> :Not enough parameters";
 		break;
 	case ERR_ALREADYREGISTRED:
-		std::cerr << ":You may not reregister" << std::endl;
+		result = ":You may not reregister";
 		break;
 	case ERR_NOPERMFORHOST:
-		std::cerr << ":Your host isn't among the privileged" << std::endl;
+		result = ":Your host isn't among the privileged";
 		break;
 	case ERR_PASSWDMISMATCH:
-		std::cerr << ":Password incorrect" << std::endl;
+		result = ":Password incorrect";
 		break;
 	case ERR_YOUREBANNEDCREEP:
-		std::cerr << ":You are banned from this server" << std::endl;
+		result = ":You are banned from this server";
 		break;
 	case ERR_KEYSET:
-		std::cerr << "<channel> :Channel key already set" << std::endl;
+		result = "<channel> :Channel key already set";
 		break;
 	case ERR_CHANNELISFULL:
-		std::cerr << "<channel> :Cannot join channel (+l)" << std::endl;
+		result = "<channel> :Cannot join channel (+l)";
 		break;
 	case ERR_UNKNOWNMODE:
-		std::cerr << "<char> :is unknown mode char to me" << std::endl;
+		result = "<char> :is unknown mode char to me";
 		break;
 	case ERR_INVITEONLYCHAN:
-		std::cerr << "<channel> :Cannot join channel (+i)" << std::endl;
+		result = "<channel> :Cannot join channel (+i)";
 		break;
 	case ERR_BANNEDFROMCHAN:
-		std::cerr << "<channel> :Cannot join channel (+b)" << std::endl;
+		result = "<channel> :Cannot join channel (+b)";
 		break;
 	case ERR_BADCHANNELKEY:
-		std::cerr << "<channel> :Cannot join channel (+k)" << std::endl;
+		result = "<channel> :Cannot join channel (+k)";
 		break;
 	case ERR_NOPRIVILEGES:
-		std::cerr << ":Permission Denied- You're not an IRC operator" << std::endl;
+		result = ":Permission Denied- You're not an IRC operator";
 		break;
 	case ERR_CHANOPRIVSNEEDED:
-		std::cerr << "<channel> :You're not channel operator" << std::endl;
+		result = "<channel> :You're not channel operator";
 		break;
 	case ERR_CANTKILLSERVER:
-		std::cerr << ":You cant kill a server!" << std::endl;
+		result = ":You cant kill a server!";
 		break;
 	case ERR_NOOPERHOST:
-		std::cerr << ":No O-lines for your host" << std::endl;
+		result = ":No O-lines for your host";
 		break;
 	case ERR_UMODEUNKNOWNFLAG:
-		std::cerr << ":Unknown MODE flag" << std::endl;
+		result = ":Unknown MODE flag";
 		break;
 	case ERR_USERSDONTMATCH:
-		std::cerr << ":Cant change mode for other users" << std::endl;
+		result = ":Cant change mode for other users";
 		break;
 	default:
-		std::cerr << ":Unknown errors" << std::endl;
+		result = ":Unknown errors";
 		break;
 	}
+	return result;
 }
