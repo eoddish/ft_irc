@@ -6,7 +6,7 @@
 /*   By: eoddish <eoddish@student.21-school>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/07 19:29:59 by eoddish           #+#    #+#             */
-/*   Updated: 2022/02/10 21:01:44 by eoddish          ###   ########.fr       */
+/*   Updated: 2022/02/11 16:18:58 by eoddish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -114,17 +114,15 @@ void Server::parse(  ) {
 
 void Server::ft_socket() {
 
-	int server_sock;
-	int ret;
-	int option = 1;
-	int timeout;
-
+	int len, ret, option = 1;
+	int server_sock = -1, fd = -1;
+	bool close_conn, end_server = false, compress_array = false;
+	char buf[512];
 	struct sockaddr_in server_addr, client_addr;
-	socklen_t client_addr_size;
-	char buf1[512];
-	char buf2[512];
+	int timeout;
 	struct pollfd fds[200];
-	int nfds = 1;
+	int nfds = 1, cur_size = 0, i, j;
+	socklen_t client_addr_size;
 
 	// create a socket
 	server_sock = socket( AF_INET, SOCK_STREAM, 0 );
@@ -180,11 +178,10 @@ void Server::ft_socket() {
 	memset( fds, 0, sizeof( fds ) );
 	fds[0].fd = server_sock;
 	fds[0].events = POLLIN;
-	timeout = 3 * 60 * 1000;
+	timeout = 1 * 60 * 60 * 1000;
 
 
 
-	client_addr_size = sizeof( client_addr );
 
 	do {
 
@@ -196,42 +193,149 @@ void Server::ft_socket() {
 			perror( "poll() error" );
 			break;
 		}
+		if ( ret == 0 ) {
 
-		if ( ret == 0 )
+			std::cout << "poll() timed out" << std::endl;
+			break;
+		}
 
-		int fd = accept( server_sock, ( struct sockaddr * ) & client_addr, & client_addr_size );
+		// find readable fds
+		cur_size = nfds;
+		for ( i = 0; i < cur_size; i++ ) {
 
-		std::cout << "Connection established" << std::endl;
-		std::string ip = inet_ntoa( client_addr.sin_addr );
-		unsigned short port = ntohs( client_addr.sin_port ); 
+			if ( fds[i].revents == 0 )
+				continue;
+
+			if ( fds[i].revents != POLLIN ) {
+
+				std::cout << "Error: revents is not POLLIN!" << std::endl;
+				end_server = true;
+				break;
+			}
+
+			client_addr_size = sizeof( client_addr );
+			if ( fds[i].fd == server_sock ) {
+
+				do {
+
+					// accept connections
+					fd = accept( server_sock, ( struct sockaddr * ) & client_addr, & client_addr_size );
+					if ( fd < 0 ) {
+
+						if ( errno != EWOULDBLOCK ) {
+
+							perror( "accept() error" );
+							end_server = true;
+						}
+						break;
+					}
+
+					std::cout << "Connection established" << std::endl;
+					std::string ip = inet_ntoa( client_addr.sin_addr );
+					unsigned short port = ntohs( client_addr.sin_port ); 
+					std::cout << "Connection established with ip " << ip;
+					std::cout << " and port " << port << std::endl;
+
+					fds[nfds].fd = fd;
+					fds[nfds].events = POLLIN;
+					++nfds;
+
+				} while ( fd != -1 );
+
+			} else {
 
 
-		std::cout << "Connection established with ip " << ip;
-		std::cout << " and port " << port << std::endl;
+				close_conn = false;
 
-		recv( fd, buf1, 512, 0 );
-		std::cout << buf1;	
-		
-		std::string _nick = "eoddish";
+				do {
 
-		std::string sendline = "001 ";
-		sendline.append( _nick );
-		sendline.append( " :Welcome to the Internet Relay Network " );
-		sendline.append( _nick );
-		sendline.append( "\n" );
+					// receive data
+					bzero( buf, sizeof( buf ) );
+					ret = recv( fds[i].fd, buf, sizeof( buf ), 0 );
+					if ( ret < 0 ) {
 
-		strcpy( buf2, sendline.c_str() );
-		send( fd, buf2, 512, 0 );
+						if ( errno != EWOULDBLOCK ) {
 
-		recv( fd, buf1, 512, 0 );
-		std::cout << buf1;
+							perror( "recv() error" );
+							close_conn = true;
+						}
+						break;
+					}
+					if ( ret == 0 ) {
 
-		recv( fd, buf1, 512, 0 );
-		std::cout << buf1;
-	
-		
-		//parse();
-	} while ( true );
+						std::cout << "Connection closed" << std::endl;
+						close_conn = true;
+						break;
+					}
+
+					len = ret;
+					std::cout << buf;
+
+					// send data
+
+					bzero( buf, sizeof( buf ) );
+
+					std::string _nick = "eoddish";
+					std::string sendline = "001 ";
+					sendline.append( _nick );
+					sendline.append( " :Welcome to the Internet Relay Network " );
+					sendline.append( _nick );
+					sendline.append( "\n" );
+
+					strcpy( buf, sendline.c_str() );
+
+					std::cout << "$$$" << std::endl;
+
+					ret = send( fds[i].fd, buf, sizeof( buf ), 0 );
+					if ( ret < 0 ) {
+
+						perror( "send() error" );
+						close_conn = true;
+						break;
+					}
+
+				} while ( true );
+
+				// clean closed connection
+				if ( close_conn ) {
+
+					close( fds[i].fd );
+					fds[i].fd = -1;
+					compress_array = true;
+				}
+
+
+			}
+
+		}
+
+		// compress fds
+		if ( compress_array ) {
+
+			compress_array = false;
+			for ( i = 0; i < nfds; i++ ) {
+
+				if ( fds[i].fd == -1 ) {
+
+					for ( j = i; j < nfds; j++ )
+						fds[j].fd = fds[j + 1].fd;
+						
+					i--;
+					nfds--;
+				}
+			}
+		}
+
+	} while ( end_server == false );
+
+	// clean up open sockets
+	for ( i = 0; i < nfds; i++ ) {
+
+		if ( fds[i].fd >= 0 )
+			close( fds[i].fd );
+	}
+
+	//parse();
 
 }
 
