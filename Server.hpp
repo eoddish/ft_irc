@@ -6,7 +6,7 @@
 /*   By: eoddish <eoddish@student.21-school>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/07 19:27:07 by eoddish           #+#    #+#             */
-/*   Updated: 2022/02/12 18:00:37 by eoddish          ###   ########.fr       */
+/*   Updated: 2022/02/14 21:12:06 by eoddish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,8 @@
 #include <map>
 #include <ctime>
 #include "ErrorMess.hpp"
+#include "User.hpp"
+#include "Message.hpp"
 #include <sys/socket.h>
 #include <arpa/inet.h>
 #include <unistd.h>
@@ -24,6 +26,9 @@
 #include <poll.h>
 #include <sstream>
 
+
+#ifndef SERVER_HPP
+# define SERVER_HPP
 
 class Server {
 
@@ -46,22 +51,35 @@ public:
 
 	// Engine
 	
-	std::string parse( std::string input );
+	std::string parse( std::string input , User *puser );
 	void ft_socket();
 
-	// Commands
-	
-	std::string ft_cap( std::vector<std::string> & vct );
-	std::string ft_time( std::vector<std::string> & vct );
-	std::string ft_ping( std::vector<std::string> & vct );
-	std::string ft_mode( std::vector<std::string> & vct );
 
+	
+	// Commands
+	//
+	std::string     PassCommand(Message &Msg, User &user);
+    std::string     NickCommand(Message &Msg, User *puser);
+    std::string     UserCommand(Message &Msg, User &user);
+   // std::string     OperCommand(Message &Msg, User &user);
+    std::string     QuitCommand(Message &Msg, User &user );
+
+
+    bool    CorrectNick(std::string Nickname);
+    bool    CheckConcidence(std::string CheckData);
+	
+	std::string ft_cap( Message &msg  );
+	std::string ft_time( Message &msg, User &usr );
+	std::string ft_ping( Message &msg, User &usr );
+
+
+	std::map<std::string, User *>       _UsersCheck;
 
 protected:
 
 	// Types
 
-	typedef std::string (Server::*func)( std::vector<std::string> & );
+	typedef std::string (Server::*func)( Message &, User &);
 
 	// Members
 	
@@ -76,3 +94,4 @@ protected:
 	std::string & ft_tolower( std::string & str );
 		
 };
+#endif

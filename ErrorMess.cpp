@@ -6,88 +6,88 @@
 /*   By: nagrivan <nagrivan@21-school.ru>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/08 16:42:09 by nagrivan          #+#    #+#             */
-/*   Updated: 2022/02/11 18:08:26 by eoddish          ###   ########.fr       */
+/*   Updated: 2022/02/14 18:48:42 by eoddish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ErrorMess.hpp"
 
-std::string	PrintError(int CodeError) {
+std::string	PrintError(std::string Parametr1, std::string Parametr2, int CodeError) {
 
 	std::string result;
 	switch (CodeError)
 	{
 	case ERR_NOSUCHNICK:
-		result = "<nickname> :No such nick/channel";
+		result = Parametr1 + " :No such nick/channel";
 		break;
 	case ERR_NOSUCHSERVER:
-		result = "<server name> :No such server";
+		result = Parametr1 + " :No such server";
 		break;
 	case ERR_NOSUCHCHANNEL:
-		result = "<channel name> :No such channel";
+		result = Parametr1 + " :No such channel";
 		break;
 	case ERR_CANNOTSENDTOCHAN:
-		result = "<channel name> :Cannot send to channel";
+		result = Parametr1 + " :Cannot send to channel";
 		break;
 	case ERR_TOOMANYCHANNELS:
-		result = "<channel name> :You have joined too many channels";
+		result = Parametr1 + " :You have joined too many channels";
 		break;
 	case ERR_WASNOSUCHNICK:
-		result = "<nickname> :There was no such nickname";
+		result =  Parametr1 + " :There was no such nickname";
 		break;
 	case ERR_TOOMANYTARGETS:
-		result = "<target> :Duplicate recipients. No message delivered";
+		result = Parametr1 + " :Duplicate recipients. No message delivered";
 		break;
 	case ERR_NOORIGIN:
 		result = ":No origin specified";
 		break;
 	case ERR_NORECIPIENT:
-		result = ":No recipient given (<command>)";
+		result = ":No recipient given (" + Parametr1 + ")";
 		break;
 	case ERR_NOTEXTTOSEND:
 		result = ":No text to send";
 		break;
 	case ERR_NOTOPLEVEL:
-		result = "<mask> :No toplevel domain specified";
+		result = Parametr1 + " :No toplevel domain specified";
 		break;
 	case ERR_WILDTOPLEVEL:
-		result = "<mask> :Wildcard in toplevel domain";
+		result = Parametr1 + " :Wildcard in toplevel domain";
 		break;
 	case ERR_UNKNOWNCOMMAND:
-		result = " :Unknown command";
+		result = Parametr1 + " :Unknown command";
 		break;
 	case ERR_NOMOTD:
 		result = ":MOTD File is missing";
 		break;
 	case ERR_NOADMININFO:
-		result = "<server> :No administrative info available";
+		result = Parametr1 + " :No administrative info available";
 		break;
 	case ERR_FILEERROR:
-		result = ":File error doing <file op> on <file>";
+		result = ":File error doing " + Parametr1 + " on " + Parametr2;
 		break;
 	case ERR_NONICKNAMEGIVEN:
 		result = ":No nickname given";
 		break;
 	case ERR_ERRONEUSNICKNAME:
-		result = "<nick> :Erroneus nickname";
+		result = Parametr1 + " :Erroneus nickname";
 		break;
 	case ERR_NICKNAMEINUSE:
-		result = "<nick> :Nickname is already in use";
+		result = Parametr1 + " :Nickname is already in use";
 		break;
 	case ERR_NICKCOLLISION:
-		result = "<nick> :Nickname collision KILL";
+		result = Parametr1 + " :Nickname collision KILL";
 		break;
 	case ERR_USERNOTINCHANNEL:
-		result = "<nick> <channel> :They aren't on that channel";
+		result = Parametr1 + " " + Parametr2 + " :They aren't on that channel";
 		break;
 	case ERR_NOTONCHANNEL:
-		result = "<channel> :You're not on that channel";
+		result = Parametr1 + " :You're not on that channel";
 		break;
 	case ERR_USERONCHANNEL:
-		result = "<user> <channel> :is already on channel";
+		result = Parametr1 + " " + Parametr2 + " :is already on channel";
 		break;
 	case ERR_NOLOGIN:
-		result = "<user> :User not logged in";
+		result = Parametr1 + " :User not logged in";
 		break;
 	case ERR_SUMMONDISABLED:
 		result = ":SUMMON has been disabled";
@@ -99,7 +99,7 @@ std::string	PrintError(int CodeError) {
 		result = ":You have not registered";
 		break;
 	case ERR_NEEDMOREPARAMS:
-		result = "<command> :Not enough parameters";
+		result = Parametr1 + " :Not enough parameters";
 		break;
 	case ERR_ALREADYREGISTRED:
 		result = ":You may not reregister";
@@ -114,28 +114,28 @@ std::string	PrintError(int CodeError) {
 		result = ":You are banned from this server";
 		break;
 	case ERR_KEYSET:
-		result = "<channel> :Channel key already set";
+		result = Parametr1 + " :Channel key already set";
 		break;
 	case ERR_CHANNELISFULL:
-		result = "<channel> :Cannot join channel (+l)";
+		result = Parametr1 + " :Cannot join channel (+l)";
 		break;
 	case ERR_UNKNOWNMODE:
-		result = "<char> :is unknown mode char to me";
+		result = Parametr1 + " :is unknown mode char to me";
 		break;
 	case ERR_INVITEONLYCHAN:
-		result = "<channel> :Cannot join channel (+i)";
+		result = Parametr1 + " :Cannot join channel (+i)";
 		break;
 	case ERR_BANNEDFROMCHAN:
-		result = "<channel> :Cannot join channel (+b)";
+		result = Parametr1 + " :Cannot join channel (+b)";
 		break;
 	case ERR_BADCHANNELKEY:
-		result = "<channel> :Cannot join channel (+k)";
+		result = Parametr1 + " :Cannot join channel (+k)";
 		break;
 	case ERR_NOPRIVILEGES:
 		result = ":Permission Denied- You're not an IRC operator";
 		break;
 	case ERR_CHANOPRIVSNEEDED:
-		result = "<channel> :You're not channel operator";
+		result = Parametr1 + " :You're not channel operator";
 		break;
 	case ERR_CANTKILLSERVER:
 		result = ":You cant kill a server!";

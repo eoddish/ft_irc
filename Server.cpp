@@ -6,7 +6,7 @@
 /*   By: eoddish <eoddish@student.21-school>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/07 19:29:59 by eoddish           #+#    #+#             */
-/*   Updated: 2022/02/12 19:36:32 by eoddish          ###   ########.fr       */
+/*   Updated: 2022/02/14 21:11:56 by eoddish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,8 +16,8 @@ Server::Server( ) : _port( 0 ), _password( "default" ), _name( "ircserv" ) {
 
 	_functions["time"] =  &Server::ft_time;
 	_functions["ping"] =  &Server::ft_ping;
-	_functions["cap"] = &Server::ft_cap;
-	_functions["mode"] = &Server::ft_mode;
+//	_functions["cap"] = &Server::ft_cap;
+	_functions["quit"] = &Server::QuitCommand;
 }
 
 Server::Server( Server const & other ) {
@@ -61,14 +61,12 @@ void Server::setPassword( std::string password ) {
 	_password = password;
 }
 
-std::string  Server::ft_mode( std::vector<std::string> & vct ) {	
 
-	std::cout << vct[0] << std::endl; 
-	return "";
-}
+std::string  Server::ft_time( Message &msg, User &usr ) {	
+	
+	(void ) usr;
+	std::vector<std::string> & vct = msg.getParamets(); 
 
-std::string  Server::ft_time( std::vector<std::string> & vct ) {	
-/*
 	std::cout << vct[0] << std::endl;
 
 	time_t rawtime;
@@ -76,49 +74,33 @@ std::string  Server::ft_time( std::vector<std::string> & vct ) {
 
 	std::string _nick = "eoddish";
 	std::string res;
-	res.append( "391 " );
-	//res.append( _nick );
-	res.append( "ircserv" );
-	res.append( " :Sat, 12 Feb 2022 14:24:22 UTC" );
-	//res.append( ctime( &rawtime ) );
+	res.append( ":ircserv 391 " );
+	res.append( _nick );
+	res.append( " ircserv :" );
+	res.append( ctime( &rawtime ) );
 
-//	res.erase( res.end() - 1 );
-	res.append( "\n" );
-	
-
-	return res;
-*/
-
-	std::cout << vct[0] << std::endl;
-
-	std::string sendline;
-/*
-	std::string _nick = "eoddish";
-	sendline.append( ":127.0.0.1 " );
-	sendline.append( "391 " );
-	sendline.append( _nick );
-	sendline.append( " 127.0.0.1" );
-	sendline.append( " :Sat, 12 Feb 2022 14:24:22 UTC" );
-//	sendline.append( _nick );
-	sendline.append( "\r\n" );
-*/
-
-	sendline.append(":ircserv 391 eoddish ircserv :Sat, 12 Feb 2022 14:24:22 UTC\r\n" );
-	return sendline;
-}
-
-std::string Server::ft_ping( std::vector<std::string> & vct ) {
-
-	std::string res = "PONG ";
-	res.append( vct[1] );
+	res.erase( res.end() - 1 );
 	res.append( "\r\n" );
 
 	return res;
+
+}
+
+std::string Server::ft_ping( Message &msg, User &usr ) {
+
+	std::vector<std::string> & vct  = msg.getParamets();
+	std::string res = "PONG ";
+	res.append( vct[1] );
+	res.append( "\r\n" );
+	(void ) usr;
+
+	return res;
 }
 
 
-std::string Server::ft_cap( std::vector<std::string> & vct ) {
-
+std::string Server::ft_cap( Message &msg ) {
+	
+	std::vector<std::string> & vct = msg.getParamets();
 	std::cout << vct[0] << std::endl;
 
 	std::string _nick = "eoddish";
@@ -139,10 +121,11 @@ std::string Server::ft_cap( std::vector<std::string> & vct ) {
 	return sendline;
 }
 
-std::string Server::parse( std::string str ) {
+std::string Server::parse( std::string str, User *puser ) {
 
-	
-	std::vector<std::string> vct;
+	Message msg;
+	User user; 
+	std::vector<std::string> & vct = msg._Paramets;
 
 	// CHECK IF THERE'S A PREFIX 
 	if ( str[0] == ':' ) {
@@ -162,14 +145,24 @@ std::string Server::parse( std::string str ) {
 
 	vct[0] = ft_tolower( vct[0] );
 
+	if ( vct[0] == "cap" )
+		return ft_cap( msg );
+	else if ( vct[0] == "nick" )
+	{
+		return NickCommand( msg, puser );
+	}
 	if ( _functions.find( vct[0] ) == _functions.end() ) {
 
-		std::string res = vct[0];
-		res.append( PrintError( 421 ) );
+		std::string res;
+		//std::string res = vct[0];
+		res.append( PrintError( vct[0], "", 421 ) );
 		return res.append ( "\r\n" ); 
 	}
 
-	return (this->*_functions[vct[0]])( vct );
+	//msg.setParamets( vct );
+//	msg._Paramets = vct;
+
+	return (this->*_functions[vct[0]])( msg, *puser );
 }
 
 void Server::ft_socket() {
@@ -238,7 +231,8 @@ void Server::ft_socket() {
 	memset( fds, 0, sizeof( fds ) );
 	fds[0].fd = server_sock;
 	fds[0].events = POLLIN;
-	timeout = 1 * 60 * 60 * 1000;
+	//timeout = 1 * 60 * 60 * 1000;
+	timeout = -1;
 
 
 
@@ -300,6 +294,8 @@ void Server::ft_socket() {
 					fds[nfds].events = POLLIN;
 					++nfds;
 
+
+
 				} while ( fd != -1 );
 
 			} else {
@@ -337,8 +333,26 @@ void Server::ft_socket() {
 					while ( std::getline( iss, str ) ) {
 
 					str.erase( str.end() - 1 );
+
+					User *puser = NULL;
+					std::map<std::string, User *>::iterator it ;
+
+	std::cout << "$$$" << std::endl;
+					for( it = _UsersCheck.begin(); it != _UsersCheck.end() && it->second->fd != fds[i].fd  ; ++it )
+						;
+
+					if ( it != _UsersCheck.end() )
+						puser = it->second;	
 					
-					std::string sendline = parse( str );
+					std::string sendline = parse( str, puser );
+
+					// quit command called
+					if ( sendline == "quit" ) {
+
+						std::cout << "Connection closed" << std::endl;
+						close_conn = true;
+						break;
+					}
 
 					std::cout << "*" << sendline << "#";
 
