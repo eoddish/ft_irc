@@ -6,7 +6,7 @@
 /*   By: nagrivan <nagrivan@21-school.ru>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/09 13:01:19 by nagrivan          #+#    #+#             */
-/*   Updated: 2022/02/14 20:09:42 by eoddish          ###   ########.fr       */
+/*   Updated: 2022/02/15 20:06:47 by eoddish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,13 +28,17 @@ private:
 	
 	std::vector<char >			_FlagsStatus;
 	bool						_StatusRegistr;
+
+
+	int _fd;
+
 public:
-	int fd;
 	User();
 	virtual ~User();
 	User(const User &copy);
 	User&	operator= (const User &copy);
 
+	int getFd( void ) const;
 	std::string	getUserName(void) const;
 	std::string	getRealName(void) const;
 	std::string getNickName(void) const;
@@ -44,6 +48,7 @@ public:
 	int			getLimitChannel(void) const;
 	int			getHowManyChannel(void) const;
 	
+	void		setFd( int fd );
 	void		setUserName(std::string Username);
 	void		setRealName(std::string Realname);
 	void		setNickName(std::string Nickname);

@@ -6,13 +6,14 @@
 /*   By: nagrivan <nagrivan@21-school.ru>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/09 13:07:00 by nagrivan          #+#    #+#             */
-/*   Updated: 2022/02/14 15:52:12 by eoddish          ###   ########.fr       */
+/*   Updated: 2022/02/15 17:53:03 by eoddish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 # include "User.hpp"
 
-User::User() {
+User::User() : _StatusRegistr( false ) {
+
 	std::cout << "Constructor User was started" << std::endl;
 	this->_StatusRegistr = false;
 }
@@ -43,6 +44,9 @@ User&		User::operator--() {
 	return *this;
 }
 
+int	User::getFd(void) const {
+	return (this->_fd);
+}
 std::string	User::getUserName(void) const {
 	return (this->_UserName);
 }
@@ -63,6 +67,9 @@ bool		User::getStatusRegistr(void) const {
 	return(this ->_StatusRegistr);
 }
 
+void		User::setFd( int fd ) {
+	this->_fd = fd;
+}
 void		User::setUserName(std::string Username) {
 	this->_UserName = Username;
 }

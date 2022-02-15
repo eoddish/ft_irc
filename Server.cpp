@@ -6,7 +6,7 @@
 /*   By: eoddish <eoddish@student.21-school>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/07 19:29:59 by eoddish           #+#    #+#             */
-/*   Updated: 2022/02/14 21:11:56 by eoddish          ###   ########.fr       */
+/*   Updated: 2022/02/15 19:47:21 by eoddish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,8 +16,13 @@ Server::Server( ) : _port( 0 ), _password( "default" ), _name( "ircserv" ) {
 
 	_functions["time"] =  &Server::ft_time;
 	_functions["ping"] =  &Server::ft_ping;
-//	_functions["cap"] = &Server::ft_cap;
+	_functions["cap"] = &Server::ft_cap;
+	_functions["pass"] = &Server::PassCommand;
+	_functions["nick"] = &Server::NickCommand;
+	_functions["user"] = &Server::UserCommand;
+	_functions["oper"] = &Server::OperCommand;
 	_functions["quit"] = &Server::QuitCommand;
+
 }
 
 Server::Server( Server const & other ) {
@@ -62,9 +67,8 @@ void Server::setPassword( std::string password ) {
 }
 
 
-std::string  Server::ft_time( Message &msg, User &usr ) {	
+std::string  Server::ft_time( Message &msg, User &user ) {	
 	
-	(void ) usr;
 	std::vector<std::string> & vct = msg.getParamets(); 
 
 	std::cout << vct[0] << std::endl;
@@ -72,70 +76,48 @@ std::string  Server::ft_time( Message &msg, User &usr ) {
 	time_t rawtime;
 	time ( &rawtime );
 
-	std::string _nick = "eoddish";
 	std::string res;
-	res.append( ":ircserv 391 " );
-	res.append( _nick );
+	res.append( "391 " );
+	res.append( user.getNickName() );
 	res.append( " ircserv :" );
 	res.append( ctime( &rawtime ) );
 
 	res.erase( res.end() - 1 );
-	res.append( "\r\n" );
 
 	return res;
 
 }
 
-std::string Server::ft_ping( Message &msg, User &usr ) {
+std::string Server::ft_ping( Message &msg, User &user ) {
 
+	(void) user;
 	std::vector<std::string> & vct  = msg.getParamets();
 	std::string res = "PONG ";
 	res.append( vct[1] );
-	res.append( "\r\n" );
-	(void ) usr;
 
 	return res;
 }
 
 
-std::string Server::ft_cap( Message &msg ) {
+std::string Server::ft_cap( Message &msg, User &user ) {
 	
+	(void) user;
 	std::vector<std::string> & vct = msg.getParamets();
 	std::cout << vct[0] << std::endl;
 
-	std::string _nick = "eoddish";
-	std::string sendline;
-	sendline.append(":ircserv 001 eoddish :Welcome to the Internet Relay Network eoddish\r\n" );
-/*	sendline.append( "001 " );
-	sendline.append( _nick );
-	sendline.append( " ircserv" );
-	sendline.append( " :Welcome to the Internet Relay Network " );
-	sendline.append( _nick );
-	sendline.append( "\r\n" );
-	*/
-	sendline.append( ":ircserv 002 eoddish :Your host is <servername>, running version <ver>\r\n" );
-	sendline.append( ":ircserv 003 eoddish :This server was created <date>\r\n" );
-	sendline.append( ":ircserv 004 eoddish :<servername> <version> <available user modes> <available channel modes>\r\n" );
 
-
-	return sendline;
+	return "";
 }
 
-std::string Server::parse( std::string str, User *puser ) {
+std::string Server::parse( std::string str, User & user ) {
 
 	Message msg;
-	User user; 
 	std::vector<std::string> & vct = msg._Paramets;
 
 	// CHECK IF THERE'S A PREFIX 
 	if ( str[0] == ':' ) {
 
 		str.erase( str.begin() );
-
-		//std::string nick;
-		//std::string user;
-		//std::strign host;
-
 		str.erase( 0, str.find(" ") );
 	}
 
@@ -145,24 +127,14 @@ std::string Server::parse( std::string str, User *puser ) {
 
 	vct[0] = ft_tolower( vct[0] );
 
-	if ( vct[0] == "cap" )
-		return ft_cap( msg );
-	else if ( vct[0] == "nick" )
-	{
-		return NickCommand( msg, puser );
-	}
 	if ( _functions.find( vct[0] ) == _functions.end() ) {
 
 		std::string res;
-		//std::string res = vct[0];
 		res.append( PrintError( vct[0], "", 421 ) );
-		return res.append ( "\r\n" ); 
+		return res; 
 	}
-
-	//msg.setParamets( vct );
-//	msg._Paramets = vct;
-
-	return (this->*_functions[vct[0]])( msg, *puser );
+	msg.setCommand( vct[0] );
+	return (this->*_functions[vct[0]])( msg, user );
 }
 
 void Server::ft_socket() {
@@ -173,7 +145,7 @@ void Server::ft_socket() {
 	char buf[512];
 	struct sockaddr_in server_addr, client_addr;
 	int timeout;
-	struct pollfd fds[200];
+	struct pollfd fds[1024];
 	int nfds = 1, cur_size = 0, i, j;
 	socklen_t client_addr_size;
 
@@ -206,9 +178,7 @@ void Server::ft_socket() {
 	// bind the socket
 	memset( &server_addr, 0, sizeof( server_addr ) );
 	server_addr.sin_family = AF_INET;
-//	memcpy( &server_addr.sin_addr, &inaddr_any, sizeof( inaddr_any ) );
 	server_addr.sin_port = htons( _port );
-//	server_addr.sin_addr.s_addr = inet_addr( "127.0.0.1" );
 	server_addr.sin_addr.s_addr = INADDR_ANY;
 	ret = bind( server_sock, ( struct sockaddr * ) & server_addr, sizeof( server_addr ) );
 	if ( ret < 0 ) {
@@ -231,7 +201,6 @@ void Server::ft_socket() {
 	memset( fds, 0, sizeof( fds ) );
 	fds[0].fd = server_sock;
 	fds[0].events = POLLIN;
-	//timeout = 1 * 60 * 60 * 1000;
 	timeout = -1;
 
 
@@ -293,8 +262,7 @@ void Server::ft_socket() {
 					fds[nfds].fd = fd;
 					fds[nfds].events = POLLIN;
 					++nfds;
-
-
+					(this->_users)[fd];
 
 				} while ( fd != -1 );
 
@@ -333,28 +301,23 @@ void Server::ft_socket() {
 					while ( std::getline( iss, str ) ) {
 
 					str.erase( str.end() - 1 );
-
-					User *puser = NULL;
-					std::map<std::string, User *>::iterator it ;
-
-	std::cout << "$$$" << std::endl;
-					for( it = _UsersCheck.begin(); it != _UsersCheck.end() && it->second->fd != fds[i].fd  ; ++it )
-						;
-
-					if ( it != _UsersCheck.end() )
-						puser = it->second;	
 					
-					std::string sendline = parse( str, puser );
+					std::string sendline = parse( str, _users[fds[i].fd] );
 
 					// quit command called
-					if ( sendline == "quit" ) {
+					if ( sendline == "quit" || sendline.substr(0,3) == "433" ) {
 
+						_users.erase( fd );
 						std::cout << "Connection closed" << std::endl;
 						close_conn = true;
 						break;
 					}
+					
+					sendline = ":ircserv " + sendline;
 
-					std::cout << "*" << sendline << "#";
+					sendline.append ( "\r\n" );
+
+					std::cout << "send: " << sendline;
 
 					// send data
 

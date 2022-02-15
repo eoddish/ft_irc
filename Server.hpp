@@ -6,7 +6,7 @@
 /*   By: eoddish <eoddish@student.21-school>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/07 19:27:07 by eoddish           #+#    #+#             */
-/*   Updated: 2022/02/14 21:12:06 by eoddish          ###   ########.fr       */
+/*   Updated: 2022/02/15 20:09:28 by eoddish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,7 @@
 #include <map>
 #include <ctime>
 #include "ErrorMess.hpp"
+#include "CmdMess.hpp"
 #include "User.hpp"
 #include "Message.hpp"
 #include <sys/socket.h>
@@ -51,29 +52,30 @@ public:
 
 	// Engine
 	
-	std::string parse( std::string input , User *puser );
+	std::string parse( std::string input , User & user );
 	void ft_socket();
 
 
 	
 	// Commands
-	//
+	
 	std::string     PassCommand(Message &Msg, User &user);
-    std::string     NickCommand(Message &Msg, User *puser);
+    std::string     NickCommand(Message &Msg, User &user);
     std::string     UserCommand(Message &Msg, User &user);
-   // std::string     OperCommand(Message &Msg, User &user);
-    std::string     QuitCommand(Message &Msg, User &user );
+    std::string     QuitCommand(Message &Msg, User &user);
+    std::string     OperCommand(Message &Msg, User &user);
 
 
     bool    CorrectNick(std::string Nickname);
     bool    CheckConcidence(std::string CheckData);
 	
-	std::string ft_cap( Message &msg  );
-	std::string ft_time( Message &msg, User &usr );
-	std::string ft_ping( Message &msg, User &usr );
+	std::string ft_cap( Message &msg, User &user  );
+	std::string ft_time( Message &msg, User &user );
+	std::string ft_ping( Message &msg, User &user );
 
 
 	std::map<std::string, User *>       _UsersCheck;
+	std::map< int, User > 		_users;
 
 protected:
 

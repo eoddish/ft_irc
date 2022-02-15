@@ -6,7 +6,7 @@
 /*   By: nagrivan <nagrivan@21-school.ru>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/12 18:39:11 by nagrivan          #+#    #+#             */
-/*   Updated: 2022/02/14 16:22:22 by nagrivan         ###   ########.fr       */
+/*   Updated: 2022/02/15 20:15:47 by eoddish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,7 @@ std::string		CmdMess(User &user, int CodeMess,\
 						std::string Parametr5, std::string Parametr6, \
 						std::string Parametr7) {
 	std::string result;
+	(void)user;
 	switch (CodeMess)
 	{
 	case RPL_NONE:
@@ -150,7 +151,7 @@ std::string		CmdMess(User &user, int CodeMess,\
 		result = ":Nobody logged in";
 		break;
 	case RPL_TRACELINK:
-		result = "Link " + Parametr1 + " & " + Parametr2 " " + Parametr3 + " " + Parametr4;
+		result = "Link " + Parametr1 + " & " + Parametr2 + " " + Parametr3 + " " + Parametr4;
 		break;
 	case RPL_TRACECONNECTING:
 		result = "Try. " + Parametr1 + " " + Parametr2;
