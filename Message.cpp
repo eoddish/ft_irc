@@ -6,7 +6,7 @@
 /*   By: nagrivan <nagrivan@21-school.ru>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/09 15:57:06 by nagrivan          #+#    #+#             */
-/*   Updated: 2022/02/14 16:59:06 by eoddish          ###   ########.fr       */
+/*   Updated: 2022/02/17 15:57:30 by nagrivan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,7 +47,7 @@ std::string	Message::getMessage(void) {
 	return (this->_Message);
 }
 
-std::vector<std::string> & Message::getParamets(void) {
+std::vector<std::string> &Message::getParamets(void) {
 	return (this->_Paramets);
 }
 
@@ -71,6 +71,6 @@ void		Message::setMessage(std::string Msg) {
 	this->_Message = Msg;
 }
 
-void        Message::setParamets(std::vector<std::string> & param) {
+void		Message::setParamets(std::vector<std::string> &param) {
 	this->_Paramets = param;
 }

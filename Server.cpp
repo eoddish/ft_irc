@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: eoddish <eoddish@student.21-school>        +#+  +:+       +#+        */
+/*   By: nagrivan <nagrivan@21-school.ru>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/07 19:29:59 by eoddish           #+#    #+#             */
-/*   Updated: 2022/02/15 19:47:21 by eoddish          ###   ########.fr       */
+/*   Updated: 2022/02/17 20:46:34 by eoddish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,6 +22,7 @@ Server::Server( ) : _port( 0 ), _password( "default" ), _name( "ircserv" ) {
 	_functions["user"] = &Server::UserCommand;
 	_functions["oper"] = &Server::OperCommand;
 	_functions["quit"] = &Server::QuitCommand;
+	//_functions["join"] = &Server::JoinCommand;
 
 }
 
@@ -112,7 +113,7 @@ std::string Server::ft_cap( Message &msg, User &user ) {
 std::string Server::parse( std::string str, User & user ) {
 
 	Message msg;
-	std::vector<std::string> & vct = msg._Paramets;
+	std::vector<std::string> & vct = msg.getParamets();
 
 	// CHECK IF THERE'S A PREFIX 
 	if ( str[0] == ':' ) {
@@ -130,7 +131,7 @@ std::string Server::parse( std::string str, User & user ) {
 	if ( _functions.find( vct[0] ) == _functions.end() ) {
 
 		std::string res;
-		res.append( PrintError( vct[0], "", 421 ) );
+		res.append( PrintError( vct[0], "", 421, user ) );
 		return res; 
 	}
 	msg.setCommand( vct[0] );
@@ -139,7 +140,7 @@ std::string Server::parse( std::string str, User & user ) {
 
 void Server::ft_socket() {
 
-	int len, ret, option = 1;
+	int  ret, option = 1;
 	int server_sock = -1, fd = -1;
 	bool close_conn, end_server = false, compress_array = false;
 	char buf[512];
@@ -292,22 +293,20 @@ void Server::ft_socket() {
 						break;
 					}
 
-					len = ret;
-					std::cout << buf;
-
+					//len = ret;
 					std::istringstream iss( buf );
 					std::string str;
 
 					while ( std::getline( iss, str ) ) {
 
 					str.erase( str.end() - 1 );
+					std::cout << "recv: " << str << std::endl;
 					
 					std::string sendline = parse( str, _users[fds[i].fd] );
 
 					// quit command called
-					if ( sendline == "quit" || sendline.substr(0,3) == "433" ) {
-
-						_users.erase( fd );
+					if ( sendline == "quit" ) {
+	
 						std::cout << "Connection closed" << std::endl;
 						close_conn = true;
 						break;
@@ -333,12 +332,18 @@ void Server::ft_socket() {
 						break;
 					}
 				}
+					if ( close_conn )
+						break;
 
 				} while ( true );
 
 				// clean closed connection
 				if ( close_conn ) {
 
+					_users.setStatusOnline( false );
+					_users.erase( fd );
+
+					
 					close( fds[i].fd );
 					fds[i].fd = -1;
 					compress_array = true;
@@ -411,4 +416,10 @@ std::string & Server::ft_tolower( std::string & str ) {
 	}
 
 	return str;
+}
+
+bool	SendMessage(User &user,std::string Mess) {
+	if (Mess.size() > 0)
+		send(user.getFd(), Mess.c_str(), Mess.size(), 0);
+	return true;
 }

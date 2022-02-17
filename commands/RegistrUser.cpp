@@ -6,27 +6,27 @@
 /*   By: nagrivan <nagrivan@21-school.ru>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/08 14:56:39 by nagrivan          #+#    #+#             */
-/*   Updated: 2022/02/17 14:56:14 by eoddish          ###   ########.fr       */
+/*   Updated: 2022/02/17 20:50:27 by eoddish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "Server.hpp"
-#include "ErrorMess.hpp"
-#include "CmdMess.hpp"
+#include "../Server.hpp"
+#include "../ErrorMess.hpp"
+#include "../CmdMess.hpp"
 
 #include <cctype>
 #include <string>
 
 std::string		Server::PassCommand(Message &Msg, User &user) {
 	if (Msg.getParamets().size() == 1)
-		return (PrintError(Msg.getCommand(), "", ERR_NEEDMOREPARAMS));
+		return (PrintError(Msg.getCommand(), "", ERR_NEEDMOREPARAMS, user ));
 	else if (this->getPassword() != Msg.getParamets()[1]) //Ошибка, непредусмотренная стандартом
 	{
 		std::cout << "Uncorrect password!" << std::endl;
 		return ("quit");
 	}
 	else if (user.getStatusRegistr() == true) //Проверка на повторную ошибочную регистрацию
-		return (PrintError("" , "", ERR_ALREADYREGISTRED));
+		return (PrintError("" , "", ERR_ALREADYREGISTRED, user ));
 	user.setStatusPass( true );
 	return ("");
 }
@@ -71,16 +71,16 @@ std::string		Server::NickCommand(Message &Msg, User & user) {
 	std::string nickname = Msg.getParamets()[1];
 
 	if (Msg.getParamets().size() == 1) {
-		return (PrintError("", "", ERR_NONICKNAMEGIVEN));
+		return (PrintError("", "", ERR_NONICKNAMEGIVEN, user ));
 	}
 	else if (this->CorrectNick(Msg.getParamets()[1]) == false) {
-		return ( PrintError(Msg.getParamets()[1], "", ERR_ERRONEUSNICKNAME));
+		return ( PrintError(Msg.getParamets()[1], "", ERR_ERRONEUSNICKNAME, user ));
 	}
 	else if (this->CheckConcidence(Msg.getParamets()[1]) == true) {
 		if (user.getStatusRegistr() == false)
-			return ( "433 " + PrintError(Msg.getParamets()[1], "", ERR_NICKCOLLISION));
+			return ( PrintError(Msg.getParamets()[1], "", ERR_NICKCOLLISION, user ));
 		else
-			return (PrintError(Msg.getParamets()[1], "", ERR_NICKNAMEINUSE));
+			return (PrintError(Msg.getParamets()[1], "", ERR_NICKNAMEINUSE, user ));
 	}
 
 	_UsersCheck.erase( user.getNickName() );
@@ -100,9 +100,9 @@ std::string		Server::NickCommand(Message &Msg, User & user) {
 
 std::string		Server::UserCommand(Message &Msg, User &user) {
 	if (Msg.getParamets().size() < 5)
-		return (PrintError(Msg.getCommand(), "", ERR_NEEDMOREPARAMS));
+		return (PrintError(Msg.getCommand(), "", ERR_NEEDMOREPARAMS, user ));
 	else if (user.getStatusRegistr() == true)
-		return (PrintError("" , "", ERR_ALREADYREGISTRED));
+		return (PrintError("" , "", ERR_ALREADYREGISTRED, user ));
 	user.setUserName(Msg.getParamets()[1]);
 	std::string realname;
 
@@ -127,7 +127,7 @@ std::string		Server::UserCommand(Message &Msg, User &user) {
 
 	std::string Password = Msg.getParamets()[1];
 	if (Password.size() == 0)
-		return (PrintError(Msg.getCommand(), "", ERR_NEEDMOREPARAMS));
+		return (PrintError(Msg.getCommand(), "", ERR_NEEDMOREPARAMS, user ));
 	// if ()
 	// 	return (ERR_NOOPERHOST); //если сервер не настроен на поддержку клиенского хоста для сообщения OPER
 	// if ()
@@ -139,7 +139,7 @@ std::string		Server::UserCommand(Message &Msg, User &user) {
 std::string		Server::QuitCommand(Message &Msg, User &user ) {
 
 	std::cout << user.getNickName() <<  " quits" << std::endl;
-	_UsersCheck.erase( user.getNickName() );
+	//user.setStatusRegistr( false );
 	//_users.erase( user.getFd() ); 
 	return ( Msg.getParamets()[0] );
 }

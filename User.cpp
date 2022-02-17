@@ -6,7 +6,7 @@
 /*   By: nagrivan <nagrivan@21-school.ru>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/09 13:07:00 by nagrivan          #+#    #+#             */
-/*   Updated: 2022/02/15 17:53:03 by eoddish          ###   ########.fr       */
+/*   Updated: 2022/02/17 20:46:20 by eoddish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,8 @@ User::User() : _StatusRegistr( false ) {
 
 	std::cout << "Constructor User was started" << std::endl;
 	this->_StatusRegistr = false;
+	this->_StatusPass = false;
+	this->_StatusOnline = false;
 }
 
 User::~User() {
@@ -47,6 +49,7 @@ User&		User::operator--() {
 int	User::getFd(void) const {
 	return (this->_fd);
 }
+
 std::string	User::getUserName(void) const {
 	return (this->_UserName);
 }
@@ -67,9 +70,18 @@ bool		User::getStatusRegistr(void) const {
 	return(this ->_StatusRegistr);
 }
 
+bool		User::getStatusPass(void) const {
+	return(this->_StatusPass);
+}
+
+bool		User::getStatusOnline(void) const {
+	return(this->_StatusOnline);
+}
+
 void		User::setFd( int fd ) {
 	this->_fd = fd;
 }
+
 void		User::setUserName(std::string Username) {
 	this->_UserName = Username;
 }
@@ -90,6 +102,14 @@ void		User::setStatusRegistr(bool StatusRegistr) {
 	this->_StatusRegistr = StatusRegistr;
 }
 
+void		User::setStatusPass(bool StatusPass) {
+	this->_StatusPass = StatusPass;
+}
+
+void		User::setStatusOnline(bool StatusOnline) {
+	this->_StatusOnline = StatusOnline;
+}
+
 void		User::setFlagsStatus(const char flag) {
 	this->_FlagsStatus.push_back(flag);
 }
@@ -105,4 +125,17 @@ void		User::popFlag(const char flag) {
 			return ;
 		}
 	}
+}
+
+bool	User::CheckUserFlags(const char Flag) {
+	for (int i = 0; this->_FlagsStatus[i] != *this->_FlagsStatus.end(); i++) {
+		if (this->_FlagsStatus[i] == Flag)
+			return (true);
+	}
+	return (false);
+}
+
+std::string	User::PrintInfo(void) const {
+	std::string Result = " " + ":" + this->_RealName;
+	return (Result);
 }

@@ -6,7 +6,7 @@
 /*   By: nagrivan <nagrivan@21-school.ru>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/09 13:01:19 by nagrivan          #+#    #+#             */
-/*   Updated: 2022/02/15 20:06:47 by eoddish          ###   ########.fr       */
+/*   Updated: 2022/02/17 20:45:20 by eoddish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,8 @@
 
 # include <iostream>
 # include <vector>
+# include <map>
+# include "Channel.hpp"
 
 class User
 {
@@ -28,10 +30,13 @@ private:
 	
 	std::vector<char >			_FlagsStatus;
 	bool						_StatusRegistr;
+	bool						_StatusOnline;
+	bool						_StatusPass;
 
+	std::map<std::string, Channel *>	_UseChannel;
 
 	int _fd;
-
+	
 public:
 	User();
 	virtual ~User();
@@ -44,9 +49,13 @@ public:
 	std::string getNickName(void) const;
 	std::string getMessageAway(void) const;
 	bool		getStatusRegistr(void) const;
+	bool		getStatusPass(void) const;
+	bool		getStatusOnline(void) const;
 	std::vector<char> getFlagsStatus(void) const;
 	int			getLimitChannel(void) const;
 	int			getHowManyChannel(void) const;
+
+	std::string	PrintInfo(void) const;
 	
 	void		setFd( int fd );
 	void		setUserName(std::string Username);
@@ -54,9 +63,13 @@ public:
 	void		setNickName(std::string Nickname);
 	void		setMessageAway(std::string MsdAway);
 	void		setStatusRegistr(bool StatusRegistr);
+	void		setStatusPass(bool StatusPass);
+	void		setStatusOnline(bool StatusOnline);
 	void		setLimitChannel(int NewLimit);
 	User&		operator++();
 	User&		operator--();
+
+	bool		CheckUserFlags(const char Flag);
 	
 	void		setFlagsStatus(const char flag);
 

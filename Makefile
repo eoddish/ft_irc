@@ -3,16 +3,16 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: eoddish <eoddish@student.21-school>        +#+  +:+       +#+         #
+#    By: nagrivan <nagrivan@21-school.ru>           +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/02/07 19:07:21 by eoddish           #+#    #+#              #
-#    Updated: 2022/02/15 20:14:33 by eoddish          ###   ########.fr        #
+#    Updated: 2022/02/17 19:11:28 by eoddish          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 NAME		= ircserv
 
-SRCS		= main.cpp Server.cpp ErrorMess.cpp RegistrUser.cpp User.cpp Message.cpp CmdMess.cpp
+SRCS		= main.cpp Server.cpp ErrorMess.cpp commands/RegistrUser.cpp User.cpp Message.cpp CmdMess.cpp 
 
 OBJS		= $(SRCS:.cpp=.o)
 
