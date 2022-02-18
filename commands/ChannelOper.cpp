@@ -6,7 +6,7 @@
 /*   By: nagrivan <nagrivan@21-school.ru>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/08 19:37:38 by nagrivan          #+#    #+#             */
-/*   Updated: 2022/02/17 20:22:56 by nagrivan         ###   ########.fr       */
+/*   Updated: 2022/02/18 14:51:43 by nagrivan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -304,6 +304,7 @@ std::string		Server::JoinCommand(Message &Msg, User &user) {
 					this->_ChannelCheck.at(NameChannel.front())->pushOperator(user);
 				}
 				this->_ChannelCheck.at(NameChannel.front())->pushUser(user.getNickName(), user);
+				this->_UsersCheck.at(user.getUserName())->pushChannel(this->_ChannelCheck.at(NameChannel.front()));
 				++user;
 				return(CmdMess(user, RPL_TOPIC, NameChannel.front(), this->_ChannelCheck.at(NameChannel.front())->getTopic(), "", "", "", "", ""));
 			}

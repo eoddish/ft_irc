@@ -6,7 +6,7 @@
 /*   By: nagrivan <nagrivan@21-school.ru>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/08 14:56:39 by nagrivan          #+#    #+#             */
-/*   Updated: 2022/02/17 20:50:27 by eoddish          ###   ########.fr       */
+/*   Updated: 2022/02/18 18:20:36 by eoddish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,11 +65,13 @@ bool	Server::CheckConcidence(std::string CheckData) {
 }
 
 std::string		Server::NickCommand(Message &Msg, User & user) {
-
-	if ( !user.getStatusPass() )
-		return( "quit" );
 	std::string nickname = Msg.getParamets()[1];
 
+	// check password
+	if ( !user.getStatusPass() )
+		return( "quit" );
+
+	// check errors 
 	if (Msg.getParamets().size() == 1) {
 		return (PrintError("", "", ERR_NONICKNAMEGIVEN, user ));
 	}
@@ -77,25 +79,40 @@ std::string		Server::NickCommand(Message &Msg, User & user) {
 		return ( PrintError(Msg.getParamets()[1], "", ERR_ERRONEUSNICKNAME, user ));
 	}
 	else if (this->CheckConcidence(Msg.getParamets()[1]) == true) {
-		if (user.getStatusRegistr() == false)
+		// existing user
+
+		if ( _UsersCheck[nickname]->getStatusRegistr() == false ) {
+
+		std::cout << "*" << std::endl;
+			_UsersCheck[nickname]->setFd( user.getFd() );
+			delete _users[user.getFd()];
+			_users[user.getFd()] = _UsersCheck[nickname];
+		}
+		else if (user.getStatusRegistr() == false)
 			return ( PrintError(Msg.getParamets()[1], "", ERR_NICKCOLLISION, user ));
 		else
 			return (PrintError(Msg.getParamets()[1], "", ERR_NICKNAMEINUSE, user ));
+	} else {
+
+		
+
+		// regular nick command
+		if ( user.getStatusRegistr() == true ) {
+
+			_UsersCheck[nickname] = _UsersCheck[user.getNickName()]; 
+			_UsersCheck.erase( user.getNickName() );
+			user.setNickName(Msg.getParamets()[1]);
+
+			return ( "You're now known as " + nickname);
+		}
+		
+		// new user	
+		user.setNickName(Msg.getParamets()[1]);
+		_UsersCheck[nickname] = _users[user.getFd()]; 
+
+		
 	}
-
-	_UsersCheck.erase( user.getNickName() );
-	user.setNickName(Msg.getParamets()[1]);
-	_UsersCheck[nickname] = &user; 
-	
-	if ( user.getStatusRegistr() == true )
-		return ( "You're now known as " + nickname);
-	std::string result;
-	result = "001 " + user.getNickName() + " :Welcome to the Internet Relay Network " + user.getNickName() + "\r\n";
-	result += ":ircserv 002 eoddish :Your host is ircserv, running version 1.0\r\n";
-	result += ":ircserv 003 eoddish :This server was created <date>\r\n";
-	result +=":ircserv 004 eoddish :ircserv 1.0 <available user modes> <available channel modes>";
-
-	return ( result );
+	return ( "" );
 }
 
 std::string		Server::UserCommand(Message &Msg, User &user) {
@@ -120,7 +137,15 @@ std::string		Server::UserCommand(Message &Msg, User &user) {
 	user.setRealName( realname );
 	user.setStatusRegistr( true );
 
-	return ("");
+	std::string result;
+	result = "001 " + user.getNickName() + " :Welcome to the Internet Relay Network " + user.getNickName() + "\r\n";
+	result += ":ircserv 002 eoddish :Your host is ircserv, running version 1.0\r\n";
+	result += ":ircserv 003 eoddish :This server was created <date>\r\n";
+	result +=":ircserv 004 eoddish :ircserv 1.0 <available user modes> <available channel modes>";
+
+
+
+	return (result);
 }
 
 	 std::string     Server::OperCommand(Message &Msg, User &user) {

@@ -6,7 +6,7 @@
 /*   By: nagrivan <nagrivan@21-school.ru>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/09 13:07:00 by nagrivan          #+#    #+#             */
-/*   Updated: 2022/02/17 20:46:20 by eoddish          ###   ########.fr       */
+/*   Updated: 2022/02/18 20:39:01 by eoddish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -136,6 +136,30 @@ bool	User::CheckUserFlags(const char Flag) {
 }
 
 std::string	User::PrintInfo(void) const {
-	std::string Result = " " + ":" + this->_RealName;
+	std::string Result;
+	
+	std::map<std::string, Channel *>::iterator Beg = this->_UseChannel.begin();
+	std::map<std::string, Channel *>::iterator End = this->_UseChannel.end();
+	for (; Beg != End; Beg++) {
+		Result += (*Beg).first + this->getNickName() + "[ ";
+		if ((*Beg).second->CheckOperator(this->getNickName()) == true)
+			Result += "@";
+		if ((*Beg).second->CheckSpeakers(this->getNickName()) == true)
+			Result += "+";
+		Result += (*Beg).first + "]";
+		if ((Beg + 1) != End)
+			Result += " ";
+	}
+   	Result	+= ":" + this->_RealName + ",";
 	return (Result);
+}
+
+void		User::pushChannel(const Channel &NewChannel) {
+	this->_UseChannel.insert(NewChannel.getNameChannel(), NewChannel);
+}
+
+void		User::popChannel(const std::string ChannelName) {
+	if (this->_UseChannel.empty() == true)
+		return ;
+	this->_UseChannel.erase(Name);
 }

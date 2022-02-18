@@ -6,33 +6,28 @@
 /*   By: nagrivan <nagrivan@21-school.ru>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/07 19:27:07 by eoddish           #+#    #+#             */
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-/*   Updated: 2022/02/17 19:29:56 by nagrivan         ###   ########.fr       */
-=======
-/*   Updated: 2022/02/17 20:28:58 by eoddish          ###   ########.fr       */
->>>>>>> Stashed changes
-=======
-/*   Updated: 2022/02/17 20:28:58 by eoddish          ###   ########.fr       */
->>>>>>> Stashed changes
+/*   Updated: 2022/02/18 20:39:42 by eoddish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#pragma once
+#ifndef SERVER_HPP
+# define SERVER_HPP
 
-#include <string>
-#include <cstring>
-#include <iostream>
-#include <vector>
-#include <map>
-#include <ctime>
-#include <queue>
-#include <cstdlib>
 #include "User.hpp"
 #include "Message.hpp"
 #include "Channel.hpp"
 #include "CmdMess.hpp"
 #include "ErrorMess.hpp"
+
+#include <string>
+#include <cstring>
+#include <iostream>
+#include <fstream>
+#include <vector>
+#include <map>
+#include <ctime>
+#include <queue>
+#include <cstdlib>
 #include <sys/socket.h>
 #include <arpa/inet.h>
 #include <unistd.h>
@@ -72,7 +67,8 @@ private:
 	std::map<std::string, User *>		_UsersCheck;
 	std::map<std::string, Channel *>	_ChannelCheck;
 	std::map<std::string, User *>		_IRC_operator;
-	std::map< int, User > 				_users;
+	std::map< int, User *> 				_users;
+	std::map< std::string, std::string> _opers;
 	
 	std::string _name;
  	std::map< std::string,  func  > _functions;	
@@ -110,8 +106,12 @@ private:
 
 	std::vector<std::string> & ft_split( std::string & str, std::vector<std::string> & vct );
 	std::string & ft_tolower( std::string & str );
+	void ft_config();
+
+	std::queue<std::string>	ListMaskUser(std::string Mask, bool Param);
 };
 
-std::queue<std::string>	split(std::string Str, char Delimiter);
 bool	SendMessage(User &user,std::string Mess);
-std::queue<std::string>	ListMaskUser(std::string Mask, bool Param);
+std::queue<std::string>	split(std::string Str, char Delimiter);
+
+#endif

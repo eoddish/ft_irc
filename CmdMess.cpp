@@ -6,7 +6,7 @@
 /*   By: nagrivan <nagrivan@21-school.ru>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/12 18:39:11 by nagrivan          #+#    #+#             */
-/*   Updated: 2022/02/17 19:15:05 by nagrivan         ###   ########.fr       */
+/*   Updated: 2022/02/18 19:59:59 by nagrivan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,7 +57,7 @@ std::string		CmdMess(User &user, int CodeMess,\
 		result += Parametr1 + " :End of /WHOIS list";
 		break;
 	case RPL_WHOISCHANNELS:
-		result += Parametr1 + " :" + Parametr2;
+		result += Parametr1;
 		break;
 	case RPL_WHOWASUSER:
 		result += Parametr1 + " " + Parametr2 + " " + Parametr3 + " * :" + Parametr4;
@@ -94,7 +94,7 @@ std::string		CmdMess(User &user, int CodeMess,\
 		break;
 	case RPL_WHOREPLY:
 		// result += Parametr1 + " "+ Parametr2 + " " + Parametr3 + " " + Parametr4 + " " + Parametr5 + " <H|G>[*][@|+] :" + Parametr6 + " " + Parametr7;
-		result += Parametr1 + Parametr2;
+		result += Parametr1 + " :" + Parametr2;
 		break;
 	case RPL_ENDOFWHO:
 		result += Parametr1 + " :End of /WHO list";

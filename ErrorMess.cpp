@@ -6,7 +6,7 @@
 /*   By: nagrivan <nagrivan@21-school.ru>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/08 16:42:09 by nagrivan          #+#    #+#             */
-/*   Updated: 2022/02/17 16:36:09 by eoddish          ###   ########.fr       */
+/*   Updated: 2022/02/18 17:52:47 by nagrivan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,7 +74,7 @@ std::string	PrintError(std::string Parametr1, std::string Parametr2, int CodeErr
 		result += ":No nickname given";
 		break;
 	case ERR_ERRONEUSNICKNAME:
-		result += Parametr1 + " :Erroneus nickname";
+		result += Parametr1 + " :Erroneous nickname";
 		break;
 	case ERR_NICKNAMEINUSE:
 		result += Parametr1 + " :Nickname is already in use";

@@ -6,7 +6,7 @@
 /*   By: nagrivan <nagrivan@21-school.ru>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/09 16:30:13 by nagrivan          #+#    #+#             */
-/*   Updated: 2022/02/17 14:46:50 by nagrivan         ###   ########.fr       */
+/*   Updated: 2022/02/18 20:17:12 by nagrivan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -104,12 +104,50 @@ std::string		Server::WhoCommand(Message &Msg, User &user) {
 			ListNickNames = ListMaskUser(Msg.getParamets()[0], false);
 	}
 	for (; ListNickNames.size() > 0; ListNickNames.pop()) {
-		SendMessage(CmdMess(user, RPL_WHOREPLY,  ListNickNames.front(), this->_UsersCheck.at(ListNickNames.front())->PrintInfo(), "", "", "", "", "", ""))// получается полная фигня, слегка подправлю функцию
+		SendMessage(CmdMess(user, RPL_WHOREPLY, this->_UsersCheck.at(ListNickNames.front())->PrintInfo(), this->_UsersCheck.at(ListNickNames.front())->getRealName(), "", "", "", "", "", ""));
+		return (CmdMess(user, RPL_ENDOFWHO, ListNickNames.front(), "", "", "", "", "", ""));
 	}
-	return (CmdMess(user, RPL_ENDOFWHO, ));
 }
 
 std::string		Server::WhoIsCommand(Message &Msg, User &user) {
+	if (Msg.getParamets().empty() == true) {
+		return (PrintError("", "", ERR_NONICKNAMEGIVEN, user));
+	}
+	else {
+		std::queue<std::string>	ListNames = split(Msg.getParamets()[0], ',');
+		
+		for (; ListNames.size() > 0; ListNames.pop()) {
+			
+			if (this->CheckConcidence(ListNames.front()) == false) {
+				SendMessage(PrintError(Msg.getParamets()[0], "", ERR_NOSUCHNICK, user));
+			}
+			
+			if (this->CheckOperators(ListNames.front()) == true) {
+				SendMessage(CmdMess(user, RPL_WHOISOPERATOR, this->_IRC_operator.at(ListNames.front())));
+			}
+			else {
+				SendMessage(CmdMess(user, RPL_WHOISUSER, this->_UsersCheck.at(ListNames.front())->getNickName(), this->_UsersCheck.at(ListNames.front())->getUserName(),
+						"", this->_UsersCheck.at(ListNames.front())->getRealName(), "", "", ""));
+			}
+			SendMessage(CmdMess(user, RPL_WHOISCHANNELS, this->_UsersCheck.at(ListNames.front())->PrintInfo(), "", "", "", "", "", ""));
+			if ( this->_UsersCheck.at(ListNames.front())->getMessageAway().size() > 0)
+				SendMessage(CmdMess(user, RPL_AWAY, ListNames.front(), this->_UsersCheck.at(ListNames.front())->getMessageAway(), "", "", "", "", ""));
+			SendMessage(CmdMess(user, RPL_WHOISIDLE,ListNames.front(), this->_UsersCheck.at(ListNames.front()))); //необходимо вывести время, прошедшее с "простоя" юзера
+			SendMessage(CmdMess(user, RPL_ENDOFWHOIS, ListNames.front(), "", "", "", "", "", ""));
+		}
+	}
+	return ("");
 }
 
-std::string		Server::WhoWasCommand(Message &Msg, User &user) {}
+std::string		Server::WhoWasCommand(Message &Msg, User &user) {
+	if (Msg.getParamets().empty() == true) {
+		return (PrintError("", "", ERR_NONICKNAMEGIVEN, user));
+	}
+
+	
+	// return (PrintError(,, ERR_NONICKNAMEGIVEN, user));
+	return (CmdMess(user, RPL_WHOWASUSER, ));
+	return (CmdMess(user, RPL_ENDOFWHOWAS, ));
+	return (CmdMess(user, RPL_WHOISSERVER, ));
+	return (PrintError(,, ERR_WASNOSUCHNICK, user));
+}

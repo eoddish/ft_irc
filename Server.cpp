@@ -6,13 +6,20 @@
 /*   By: nagrivan <nagrivan@21-school.ru>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/07 19:29:59 by eoddish           #+#    #+#             */
-/*   Updated: 2022/02/17 20:46:34 by eoddish          ###   ########.fr       */
+/*   Updated: 2022/02/18 20:39:37 by eoddish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Server.hpp"
 
 Server::Server( ) : _port( 0 ), _password( "default" ), _name( "ircserv" ) {
+
+	ft_config();
+
+	for ( std::map<std::string, std::string>::iterator it = _opers.begin(); it != _opers.end(); ++it ) {
+		std::cout << "*"<<it->first <<"*" << " " << "#" << it->second << "#"  << std::endl;
+	}
+	
 
 	_functions["time"] =  &Server::ft_time;
 	_functions["ping"] =  &Server::ft_ping;
@@ -22,6 +29,7 @@ Server::Server( ) : _port( 0 ), _password( "default" ), _name( "ircserv" ) {
 	_functions["user"] = &Server::UserCommand;
 	_functions["oper"] = &Server::OperCommand;
 	_functions["quit"] = &Server::QuitCommand;
+	
 	//_functions["join"] = &Server::JoinCommand;
 
 }
@@ -33,6 +41,8 @@ Server::Server( Server const & other ) {
 
 Server::~Server( ) {
 
+	for ( std::map< std::string, User*>::iterator it = _UsersCheck.begin(); it != _UsersCheck.end(); ++it ) 
+		delete it->second;
 }
 
 Server & Server::operator=( Server const & other ) {
@@ -263,7 +273,9 @@ void Server::ft_socket() {
 					fds[nfds].fd = fd;
 					fds[nfds].events = POLLIN;
 					++nfds;
-					(this->_users)[fd];
+					User*tmp = new User;
+					(this->_users)[fd] = tmp;
+					(this->_users)[fd]->setFd( fd );
 
 				} while ( fd != -1 );
 
@@ -302,7 +314,7 @@ void Server::ft_socket() {
 					str.erase( str.end() - 1 );
 					std::cout << "recv: " << str << std::endl;
 					
-					std::string sendline = parse( str, _users[fds[i].fd] );
+					std::string sendline = parse( str, *_users[fds[i].fd] );
 
 					// quit command called
 					if ( sendline == "quit" ) {
@@ -340,8 +352,10 @@ void Server::ft_socket() {
 				// clean closed connection
 				if ( close_conn ) {
 
-					_users.setStatusOnline( false );
-					_users.erase( fd );
+					_UsersCheck[_users[fds[i].fd]->getNickName()]->setStatusOnline( false );
+					_UsersCheck[_users[fds[i].fd]->getNickName()]->setStatusRegistr( false );
+					_UsersCheck[_users[fds[i].fd]->getNickName()]->setStatusPass( false );
+					_users.erase( fds[i].fd );
 
 					
 					close( fds[i].fd );
@@ -416,6 +430,47 @@ std::string & Server::ft_tolower( std::string & str ) {
 	}
 
 	return str;
+}
+
+void Server::ft_config( ) {
+
+	_opers.erase( _opers.begin(), _opers.end() );
+
+	std::ifstream ifs ("config.JSON", std::ifstream::in);
+
+	std::string str;
+
+	while ( std::getline( ifs, str ) ) {
+
+		if ( str.find( "operators" ) != str.npos ) {
+
+				while ( std::getline( ifs, str ) && str.find( "}" ) == str.npos ) {
+	
+				size_t k = str.find( "\"" );
+				if ( k == str.npos ) 
+					continue;
+				k++;
+				size_t m = str.find( "\"",  k + 1 );
+				if ( m == str.npos )
+					continue;
+				std::string oper = str.substr( k, m - k );
+				str.erase( 0, m + 1 );
+				k = str.find( "\"");
+				k++;
+				if ( k == str.npos )
+					continue;
+				m = str.find( "\"",  k + 1 );
+				if ( m == str.npos )
+					continue;
+				std::string pass = str.substr( k, m - k );
+				_opers[oper] = str;
+
+			}
+				
+		}
+	
+	}
+
 }
 
 bool	SendMessage(User &user,std::string Mess) {

@@ -6,16 +6,18 @@
 /*   By: nagrivan <nagrivan@21-school.ru>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/09 13:01:19 by nagrivan          #+#    #+#             */
-/*   Updated: 2022/02/17 20:45:20 by eoddish          ###   ########.fr       */
+/*   Updated: 2022/02/18 15:56:37 by eoddish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #pragma once
 
+# include "Server.hpp"
 # include <iostream>
 # include <vector>
 # include <map>
-# include "Channel.hpp"
+
+class Channel;
 
 class User
 {
@@ -74,5 +76,8 @@ public:
 	void		setFlagsStatus(const char flag);
 
 	void		popFlag(const char flag);
+
+	void		pushChannel(const Channel &NewChannel);
+	void		popChannel(const std::string ChannelName);
 };
 

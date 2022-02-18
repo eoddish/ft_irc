@@ -6,7 +6,7 @@
 /*   By: nagrivan <nagrivan@21-school.ru>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/10 15:43:36 by nagrivan          #+#    #+#             */
-/*   Updated: 2022/02/17 20:12:59 by nagrivan         ###   ########.fr       */
+/*   Updated: 2022/02/18 14:47:29 by nagrivan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -111,8 +111,6 @@ std::string 	Channel::PrintUsers(void) {
 }
 
 void	Channel::pushOperator(const User &NewOper) {
-	if (this->_Users.empty() == true)
-		return ;
 	this->_OperatorChannel.push_back(NewOper);
 }
 
@@ -131,8 +129,6 @@ void	Channel::popOperator(std::string Name) {
 }
 
 void	Channel::pushUser(std::string Key, User &NewUser) {
-	if (this->_Users.empty() == true)
-		return ;
 	this->_Users.insert(Key, NewUser);
 }
 
@@ -143,8 +139,6 @@ void	Channel::popUser(std::string Name) {
 }
 
 void	Channel::pushSpeaker(const User &NewSpeak) {
-	if (this->_Users.empty() == true)
-		return ;
 	this->_SpeakersUser.push_back(NewSpeak);
 }
 

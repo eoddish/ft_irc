@@ -6,7 +6,7 @@
 /*   By: nagrivan <nagrivan@21-school.ru>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/10 15:43:03 by nagrivan          #+#    #+#             */
-/*   Updated: 2022/02/17 20:13:03 by nagrivan         ###   ########.fr       */
+/*   Updated: 2022/02/18 14:21:13 by eoddish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,8 +14,11 @@
 
 #include <iostream>
 #include <vector>
+#include <map>
 
 #include "Server.hpp"
+
+class User;
 
 class Channel
 {
