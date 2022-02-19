@@ -6,7 +6,7 @@
 /*   By: nagrivan <nagrivan@21-school.ru>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/07 19:29:59 by eoddish           #+#    #+#             */
-/*   Updated: 2022/02/18 20:39:37 by eoddish          ###   ########.fr       */
+/*   Updated: 2022/02/19 21:06:34 by eoddish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,11 +16,6 @@ Server::Server( ) : _port( 0 ), _password( "default" ), _name( "ircserv" ) {
 
 	ft_config();
 
-	for ( std::map<std::string, std::string>::iterator it = _opers.begin(); it != _opers.end(); ++it ) {
-		std::cout << "*"<<it->first <<"*" << " " << "#" << it->second << "#"  << std::endl;
-	}
-	
-
 	_functions["time"] =  &Server::ft_time;
 	_functions["ping"] =  &Server::ft_ping;
 	_functions["cap"] = &Server::ft_cap;
@@ -29,6 +24,7 @@ Server::Server( ) : _port( 0 ), _password( "default" ), _name( "ircserv" ) {
 	_functions["user"] = &Server::UserCommand;
 	_functions["oper"] = &Server::OperCommand;
 	_functions["quit"] = &Server::QuitCommand;
+	_functions["privmsg"] = &Server::PrivmsgCommand;
 	
 	//_functions["join"] = &Server::JoinCommand;
 
@@ -463,7 +459,7 @@ void Server::ft_config( ) {
 				if ( m == str.npos )
 					continue;
 				std::string pass = str.substr( k, m - k );
-				_opers[oper] = str;
+				_opers[oper] = pass;
 
 			}
 				
@@ -474,7 +470,19 @@ void Server::ft_config( ) {
 }
 
 bool	SendMessage(User &user,std::string Mess) {
+
+	std::string sendline;
+	sendline = ":" + user.getNickName() + " ";
+	sendline += "PRIVMSG " + Mess; 
+	sendline.append ( "\r\n" );
+
+					char buf2[512];
+					bzero( buf2, sizeof( buf2 ) );
+					strcpy( buf2, sendline.data() );
+
+
+	std::cout << "#" << user.getFd() << "#" << sendline << "#";
 	if (Mess.size() > 0)
-		send(user.getFd(), Mess.c_str(), Mess.size(), 0);
+		send(user.getFd(), buf2, sendline.size(), 0);
 	return true;
 }

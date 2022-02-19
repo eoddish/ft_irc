@@ -6,7 +6,7 @@
 /*   By: nagrivan <nagrivan@21-school.ru>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/18 17:15:05 by nagrivan          #+#    #+#             */
-/*   Updated: 2022/02/18 18:25:03 by nagrivan         ###   ########.fr       */
+/*   Updated: 2022/02/19 14:39:54 by nagrivan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,7 @@ HistoryUser::HistoryUser(const User &NewOld) {
 	this->_OldRealName = NewOld.getRealName();
 	this->_OldUserName = NewOld.getUserName();
 	this->_TimeRegister;
+	this->_OldHostName = NewOld.getHostName();
 }
 
 HistoryUser::HistoryUser(const HistoryUser &NewHistory) {
@@ -66,4 +67,12 @@ time_t	HistoryUser::getTimeRegister(void) const {
 	return (this->_TimeRegister);
 }
 
+void	HistoryUser::setOldHostName(const std::string OldName) {
+	this->_OldHostName = OldName;
+}
+
+
+std::string	HistoryUser::getOldHostName(void) const {
+	return (this->_OldHostName);
+}
 

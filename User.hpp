@@ -6,7 +6,7 @@
 /*   By: nagrivan <nagrivan@21-school.ru>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/09 13:01:19 by nagrivan          #+#    #+#             */
-/*   Updated: 2022/02/18 15:56:37 by eoddish          ###   ########.fr       */
+/*   Updated: 2022/02/19 18:50:50 by nagrivan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,7 @@
 # include <iostream>
 # include <vector>
 # include <map>
+# include <ctime>
 
 class Channel;
 
@@ -24,9 +25,11 @@ class User
 private:
 	int							_LimitChannel;
 	int							_HowManyChannel;
+	time_t						_RegistrTime;
 	std::string					_UserName;
 	std::string					_RealName;
 	std::string					_NickName;
+	std::string					_HostName;
 
 	std::string					_MessageAway;
 	
@@ -46,10 +49,12 @@ public:
 	User&	operator= (const User &copy);
 
 	int getFd( void ) const;
+	time_t		getRegistrTime(void) const;
 	std::string	getUserName(void) const;
 	std::string	getRealName(void) const;
 	std::string getNickName(void) const;
 	std::string getMessageAway(void) const;
+	std::string	getHostName(void) const;
 	bool		getStatusRegistr(void) const;
 	bool		getStatusPass(void) const;
 	bool		getStatusOnline(void) const;
@@ -60,9 +65,11 @@ public:
 	std::string	PrintInfo(void) const;
 	
 	void		setFd( int fd );
+	void		setRegistrTime(time_t NewTime);
 	void		setUserName(std::string Username);
 	void		setRealName(std::string Realname);
 	void		setNickName(std::string Nickname);
+	void		setHostName(std::string HostName);
 	void		setMessageAway(std::string MsdAway);
 	void		setStatusRegistr(bool StatusRegistr);
 	void		setStatusPass(bool StatusPass);
@@ -77,7 +84,6 @@ public:
 
 	void		popFlag(const char flag);
 
-	void		pushChannel(const Channel &NewChannel);
+	void		pushChannel(Channel &NewChannel);
 	void		popChannel(const std::string ChannelName);
 };
-

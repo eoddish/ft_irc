@@ -6,7 +6,7 @@
 /*   By: nagrivan <nagrivan@21-school.ru>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/08 14:56:39 by nagrivan          #+#    #+#             */
-/*   Updated: 2022/02/18 18:20:36 by eoddish          ###   ########.fr       */
+/*   Updated: 2022/02/19 14:37:38 by eoddish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -148,16 +148,20 @@ std::string		Server::UserCommand(Message &Msg, User &user) {
 	return (result);
 }
 
-	 std::string     Server::OperCommand(Message &Msg, User &user) {
+std::string     Server::OperCommand(Message &Msg, User &user) {
 
-	std::string Password = Msg.getParamets()[1];
-	if (Password.size() == 0)
+	if (Msg.getParamets().size() < 3)
 		return (PrintError(Msg.getCommand(), "", ERR_NEEDMOREPARAMS, user ));
-	// if ()
-	// 	return (ERR_NOOPERHOST); //если сервер не настроен на поддержку клиенского хоста для сообщения OPER
-	// if ()
-	// 	return (ERR_PASSWDMISMATCH)// если пароль неверный или неуказан
-	return (CmdMess(user, RPL_YOUREOPER, "", "", "", "", "", "", ""));
+	std::string operUser = Msg.getParamets()[1];
+	std::string operPassword = Msg.getParamets()[2];
+
+	if (_opers.find(operUser) != _opers.end()) {
+		if (_opers[operUser] == operPassword)
+			return (CmdMess(user, RPL_YOUREOPER, "", "", "", "", "", "", ""));
+		else
+		 	return (PrintError(Msg.getCommand(), "", ERR_PASSWDMISMATCH, user));// если пароль неверный или неуказан
+	}
+	return (PrintError(Msg.getCommand(), "", ERR_NOOPERHOST, user)); //если сервер не настроен на поддержку клиенского хоста для сообщения OPER
 }
 
 

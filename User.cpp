@@ -6,7 +6,7 @@
 /*   By: nagrivan <nagrivan@21-school.ru>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/09 13:07:00 by nagrivan          #+#    #+#             */
-/*   Updated: 2022/02/18 20:39:01 by eoddish          ###   ########.fr       */
+/*   Updated: 2022/02/19 18:56:43 by nagrivan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,6 +50,10 @@ int	User::getFd(void) const {
 	return (this->_fd);
 }
 
+time_t		User::getRegistrTime(void) const {
+	return (this->_RegistrTime);
+}
+
 std::string	User::getUserName(void) const {
 	return (this->_UserName);
 }
@@ -64,6 +68,10 @@ std::string User::getNickName(void) const {
 
 std::string	User::getMessageAway(void) const {
 	return (this->_MessageAway);
+}
+
+std::string	User::getHostName(void) const {
+	return (this->_HostName);
 }
 
 bool		User::getStatusRegistr(void) const {
@@ -82,6 +90,10 @@ void		User::setFd( int fd ) {
 	this->_fd = fd;
 }
 
+void		User::setRegistrTime(time_t NewTime) {
+	this->_RegistrTime = NewTime;
+}
+
 void		User::setUserName(std::string Username) {
 	this->_UserName = Username;
 }
@@ -92,6 +104,10 @@ void		User::setRealName(std::string Realname) {
 
 void		User::setNickName(std::string Nickname) {
 	this->_NickName = Nickname;
+}
+
+void		User::setHostName(std::string HostName) {
+	this->_HostName = HostName;
 }
 
 void		User::setMessageAway(std::string MsdAway) {
@@ -134,32 +150,33 @@ bool	User::CheckUserFlags(const char Flag) {
 	}
 	return (false);
 }
-
+/*
 std::string	User::PrintInfo(void) const {
 	std::string Result;
 	
-	std::map<std::string, Channel *>::iterator Beg = this->_UseChannel.begin();
-	std::map<std::string, Channel *>::iterator End = this->_UseChannel.end();
-	for (; Beg != End; Beg++) {
+	std::map<std::string, Channel *>::const_iterator Beg = this->_UseChannel.begin();
+	std::map<std::string, Channel *>::const_iterator End = this->_UseChannel.end();
+	for (; Beg != End; ) {
 		Result += (*Beg).first + this->getNickName() + "[ ";
 		if ((*Beg).second->CheckOperator(this->getNickName()) == true)
 			Result += "@";
 		if ((*Beg).second->CheckSpeakers(this->getNickName()) == true)
 			Result += "+";
 		Result += (*Beg).first + "]";
-		if ((Beg + 1) != End)
+		if ((++Beg) != End)
 			Result += " ";
 	}
    	Result	+= ":" + this->_RealName + ",";
 	return (Result);
 }
 
-void		User::pushChannel(const Channel &NewChannel) {
-	this->_UseChannel.insert(NewChannel.getNameChannel(), NewChannel);
+void		User::pushChannel( Channel &NewChannel) {
+	(this->_UseChannel)[NewChannel.getNameChannel()] = &NewChannel;
 }
 
 void		User::popChannel(const std::string ChannelName) {
 	if (this->_UseChannel.empty() == true)
 		return ;
-	this->_UseChannel.erase(Name);
+	this->_UseChannel.erase(ChannelName);
 }
+*/

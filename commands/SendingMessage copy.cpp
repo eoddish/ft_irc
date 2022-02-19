@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   SendingMessage.cpp                                 :+:      :+:    :+:   */
+/*   SendingMessage copy.cpp                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: nagrivan <nagrivan@21-school.ru>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/09 16:30:13 by nagrivan          #+#    #+#             */
-/*   Updated: 2022/02/19 21:06:40 by eoddish          ###   ########.fr       */
+/*   Updated: 2022/02/19 19:01:54 by nagrivan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,19 +20,19 @@
 
 
 std::string		Server::PrivmsgCommand(Message &Msg, User &user) {
-	if (Msg.getParamets().size() == 1)
+
+	if (Msg.getReceiver().size() == 0)
 		return (PrintError(user.getNickName(), "", ERR_NORECIPIENT, user));
-	if (Msg.getParamets().size() == 2)
+	if (Msg.getParamets().size() == 1)
 		return (PrintError("", "", ERR_NOTEXTTOSEND, user));
 	
-	std::queue<std::string>	Reseivers = split(Msg.getParamets()[1], ',');
+	std::queue<std::string>	Reseivers = split(Msg.getParamets()[0], ',');
 	
-	std::cout << Reseivers.size() << std::endl;
 	for (; Reseivers.size() > 0; Reseivers.pop()) {
+	/*	
 		// if ()
 			// return (ERR_TOOMANYTARGETS);
 		
-	/*	
 		if (this->CheckChannels(Reseivers.front()) == true) {
 
 			if (this->_ChannelCheck.at(Reseivers.front())->CheckUsers(user.getNickName()) == false
@@ -50,24 +50,17 @@ std::string		Server::PrivmsgCommand(Message &Msg, User &user) {
 				this->_ChannelCheck.at(Reseivers.front())->SendUsers(Msg.getCommand(), Msg.getParamets()[1], user);
 			}
 		}
-	*	
+		
 		else if (this->CheckConcidence(Reseivers.front()) == true) {
 			if (Msg.getCommand() == "NOTICE") {
 				if (this->_UsersCheck.at(Reseivers.front())->CheckUserFlags('s') == false)
 					SendMessage(*(_UsersCheck.at(Reseivers.front())), Msg.getParamets()[1]);
 			}
 			else {
-			*/
-				
-				std::string sendline = Msg.getParamets()[1];
-				for ( size_t i = 2; i < Msg.getParamets().size(); i++ )
-					sendline += " " +  Msg.getParamets()[i];
-				SendMessage(*(_UsersCheck.at(Reseivers.front())), sendline);
+				SendMessage(*(_UsersCheck.at(Reseivers.front())), Msg.getParamets()[1]);
 				if (this->_UsersCheck.at(Reseivers.front())->getMessageAway().size() > 0)
-				{
 					SendMessage(user, CmdMess(*(_UsersCheck.at(Reseivers.front())), RPL_AWAY, Reseivers.front(), this->_UsersCheck.at(Reseivers.front())->getMessageAway(), "", "", "", "", ""));
-				}
-/*
+
 			}
 		}
 		
@@ -141,7 +134,11 @@ std::string		Server::WhoIsCommand(Message &Msg, User &user) {
 			SendMessage(CmdMess(user, RPL_WHOISCHANNELS, this->_UsersCheck.at(ListNames.front())->PrintInfo(), "", "", "", "", "", ""));
 			if ( this->_UsersCheck.at(ListNames.front())->getMessageAway().size() > 0)
 				SendMessage(CmdMess(user, RPL_AWAY, ListNames.front(), this->_UsersCheck.at(ListNames.front())->getMessageAway(), "", "", "", "", ""));
-			SendMessage(CmdMess(user, RPL_WHOISIDLE,ListNames.front(), this->_UsersCheck.at(ListNames.front()))); //необходимо вывести время, прошедшее с "простоя" юзера
+
+			std::stringstream TimeSigle;
+			TimeSigle << (time(0) - this->_UsersCheck.at(ListNames.front())->getRegistrTime()) << " " << this->_UsersCheck.at(ListNames.front())->getRegistrTime());
+			SendMessage(CmdMess(user, RPL_WHOISIDLE,ListNames.front(), TimeSigle, "", "", "", "", ""));
+
 			SendMessage(CmdMess(user, RPL_ENDOFWHOIS, ListNames.front(), "", "", "", "", "", ""));
 		}
 	}

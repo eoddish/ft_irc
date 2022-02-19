@@ -6,7 +6,7 @@
 /*   By: nagrivan <nagrivan@21-school.ru>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/07 19:27:07 by eoddish           #+#    #+#             */
-/*   Updated: 2022/02/18 20:39:42 by eoddish          ###   ########.fr       */
+/*   Updated: 2022/02/19 21:06:32 by eoddish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,7 @@
 #include "Channel.hpp"
 #include "CmdMess.hpp"
 #include "ErrorMess.hpp"
+//#include "History.hpp"
 
 #include <string>
 #include <cstring>
@@ -69,6 +70,8 @@ private:
 	std::map<std::string, User *>		_IRC_operator;
 	std::map< int, User *> 				_users;
 	std::map< std::string, std::string> _opers;
+
+	//History								_HistoryUser;
 	
 	std::string _name;
  	std::map< std::string,  func  > _functions;	

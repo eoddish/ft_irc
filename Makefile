@@ -6,13 +6,13 @@
 #    By: nagrivan <nagrivan@21-school.ru>           +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/02/07 19:07:21 by eoddish           #+#    #+#              #
-#    Updated: 2022/02/18 14:14:35 by eoddish          ###   ########.fr        #
+#    Updated: 2022/02/19 18:15:45 by eoddish          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 NAME		= ircserv
 
-SRCS		= main.cpp Server.cpp ErrorMess.cpp commands/RegistrUser.cpp User.cpp Message.cpp CmdMess.cpp 
+SRCS		= main.cpp Server.cpp ErrorMess.cpp commands/RegistrUser.cpp User.cpp Message.cpp CmdMess.cpp commands/SendingMessage.cpp Utills.cpp
 
 OBJS		= $(SRCS:.cpp=.o)
 

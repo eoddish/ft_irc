@@ -6,7 +6,7 @@
 /*   By: nagrivan <nagrivan@21-school.ru>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/18 17:32:07 by nagrivan          #+#    #+#             */
-/*   Updated: 2022/02/18 18:19:54 by nagrivan         ###   ########.fr       */
+/*   Updated: 2022/02/19 14:00:36 by nagrivan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,4 +37,20 @@ void	History::setUsersList(std::vector<HistoryUser *> &NewHistory) {
 
 std::vector<HistoryUser *>	History::getUsersList(void) const {
 	return (this->_UsersList);
+}
+
+std::queue<std::string>	History::PrintOldUsers(std::string Name) {
+	
+	std::queue<std::string> Result;
+	for (int i = 0; i < this->_UsersList.size(); i++) {
+		if (this->_UsersList[i]->getOldNickName() == Name) {
+			std::string StrRes = this->_UsersList[i]->getOldNickName() + " ";
+			StrRes += this->_UsersList[i]->getOldUserName() + " ";
+			StrRes += this->_UsersList[i]->getOldHostName() + " * :";
+			StrRes += this->_UsersList[i]->getOldRealName() + "\n";
+
+			Result.push(StrRes);
+		}
+	}
+	return (Result);
 }

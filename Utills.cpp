@@ -6,22 +6,24 @@
 /*   By: nagrivan <nagrivan@21-school.ru>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/12 16:19:50 by nagrivan          #+#    #+#             */
-/*   Updated: 2022/02/18 17:44:56 by nagrivan         ###   ########.fr       */
+/*   Updated: 2022/02/19 21:06:37 by eoddish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Server.hpp"
 
-std::queue<std::string>	ft_split(std::string Str, char Delimiter) {
+std::queue<std::string>	split(std::string Str, char Delimiter) {
 	int		NumberStr = 0;
 	std::queue<std::string>	Result;
 	
-	for (int i = 0; i < Str.size(); i++) {
+	for (size_t i = 0; i < Str.size(); i++) {
 		if (Str[i] == Delimiter) {
 			Result.push(Str.substr(NumberStr, i));
 			NumberStr = i + 1;
 		}
 	}
+	if ( Result.size() == 0 )
+			Result.push(Str);
 	return (Result);
 }
 
