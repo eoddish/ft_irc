@@ -6,13 +6,13 @@
 /*   By: nagrivan <nagrivan@21-school.ru>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/09 13:07:00 by nagrivan          #+#    #+#             */
-/*   Updated: 2022/02/19 18:56:43 by nagrivan         ###   ########.fr       */
+/*   Updated: 2022/02/21 16:19:13 by eoddish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 # include "User.hpp"
 
-User::User() : _StatusRegistr( false ) {
+User::User() : _NickName( "*" ), _StatusRegistr( false )  {
 
 	std::cout << "Constructor User was started" << std::endl;
 	this->_StatusRegistr = false;

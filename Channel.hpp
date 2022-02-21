@@ -6,7 +6,7 @@
 /*   By: nagrivan <nagrivan@21-school.ru>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/10 15:43:03 by nagrivan          #+#    #+#             */
-/*   Updated: 2022/02/18 14:21:13 by eoddish          ###   ########.fr       */
+/*   Updated: 2022/02/21 17:28:03 by eoddish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,11 +60,11 @@ public:
 	bool	CheckFlags(const char Flag);
 	bool	CheckBanMask(std::string Name);
 
-	void	pushOperator(const User &NewOper);
+	void	pushOperator(User &NewOper);
 	void	popOperator(std::string Name);
 	void	pushUser(std::string Key, User &NewUser);
 	void	popUser(std::string Name);
-	void	pushSpeaker(const User &NewSpeak);
+	void	pushSpeaker(User &NewSpeak);
 	void	popSpeaker(std::string Name);
 
 	void	SendUsers(std::string Command, std::string Mess, User &user);

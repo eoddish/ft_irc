@@ -6,7 +6,7 @@
 /*   By: nagrivan <nagrivan@21-school.ru>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/08 19:37:38 by nagrivan          #+#    #+#             */
-/*   Updated: 2022/02/18 14:51:43 by nagrivan         ###   ########.fr       */
+/*   Updated: 2022/02/21 18:02:09 by eoddish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -276,9 +276,9 @@ std::string		Server::JoinCommand(Message &Msg, User &user) {
 		for (; NameChannel.size() > 0; NameChannel.pop()) {
 			if (this->CheckChannels(NameChannel.front()) == false && this->CorrectCommandName(NameChannel.front()) == false)
 				return (PrintError(NameChannel.front(), "", ERR_NOSUCHCHANNEL, user));
-			else if (user.getHowManyChannel() == user.getLimitChannel()) {
-				return (PrintError(NameChannel.front(), "", ERR_TOOMANYCHANNELS, user));
-			}
+			//else if (user.getHowManyChannel() == user.getLimitChannel()) {
+			//	return (PrintError(NameChannel.front(), "", ERR_TOOMANYCHANNELS, user));
+			//}
 			else if (Keys.size() > 0 && this->_ChannelCheck.at(NameChannel.front())->getPassword().size() > 0) {
 				if (Keys.front() != this->_ChannelCheck.at(NameChannel.front())->getPassword()) {
 					return (PrintError(NameChannel.front(), "", ERR_BADCHANNELKEY, user));
@@ -293,18 +293,18 @@ std::string		Server::JoinCommand(Message &Msg, User &user) {
 				return (PrintError(NameChannel.front(), "", ERR_INVITEONLYCHAN, user));
 			}
 			else if (this->_ChannelCheck.at(NameChannel.front())->getBanMask().size() > 0) {
-				if (this->_ChannelCheck.at(NameChannel.front())->CheckBanMask(user.getNickName()) == true)
-					return (PrintError(NameChannel.front(), "", ERR_BANNEDFROMCHAN, user));
+				//if (this->_ChannelCheck.at(NameChannel.front())->CheckBanMask(user.getNickName()) == true)
+			//		return (PrintError(NameChannel.front(), "", ERR_BANNEDFROMCHAN, user));
 			}
 			else {
 				if (this->CheckChannels(NameChannel.front()) == false)
 				{
-					Channel	NewChannel = new Channel(NameChannel.front());
-					this->_ChannelCheck.insert(NameChannel.front(), *NewChannel);
+					Channel	*NewChannel = new Channel(NameChannel.front());
+					this->_ChannelCheck[NameChannel.front()] =  NewChannel;
 					this->_ChannelCheck.at(NameChannel.front())->pushOperator(user);
 				}
 				this->_ChannelCheck.at(NameChannel.front())->pushUser(user.getNickName(), user);
-				this->_UsersCheck.at(user.getUserName())->pushChannel(this->_ChannelCheck.at(NameChannel.front()));
+				//this->_UsersCheck.at(user.getUserName())->pushChannel(*(this->_ChannelCheck.at(NameChannel.front())));
 				++user;
 				return(CmdMess(user, RPL_TOPIC, NameChannel.front(), this->_ChannelCheck.at(NameChannel.front())->getTopic(), "", "", "", "", ""));
 			}

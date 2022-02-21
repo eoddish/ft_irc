@@ -6,7 +6,7 @@
 /*   By: nagrivan <nagrivan@21-school.ru>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/09 16:30:13 by nagrivan          #+#    #+#             */
-/*   Updated: 2022/02/19 21:06:40 by eoddish          ###   ########.fr       */
+/*   Updated: 2022/02/21 19:17:04 by eoddish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,9 +30,9 @@ std::string		Server::PrivmsgCommand(Message &Msg, User &user) {
 	std::cout << Reseivers.size() << std::endl;
 	for (; Reseivers.size() > 0; Reseivers.pop()) {
 		// if ()
-			// return (ERR_TOOMANYTARGETS);
+			// return (ERR_TOOMANYTARGETS); //
 		
-	/*	
+		
 		if (this->CheckChannels(Reseivers.front()) == true) {
 
 			if (this->_ChannelCheck.at(Reseivers.front())->CheckUsers(user.getNickName()) == false
@@ -50,30 +50,30 @@ std::string		Server::PrivmsgCommand(Message &Msg, User &user) {
 				this->_ChannelCheck.at(Reseivers.front())->SendUsers(Msg.getCommand(), Msg.getParamets()[1], user);
 			}
 		}
-	*	
+		
 		else if (this->CheckConcidence(Reseivers.front()) == true) {
 			if (Msg.getCommand() == "NOTICE") {
 				if (this->_UsersCheck.at(Reseivers.front())->CheckUserFlags('s') == false)
 					SendMessage(*(_UsersCheck.at(Reseivers.front())), Msg.getParamets()[1]);
 			}
+
 			else {
-			*/
 				
-				std::string sendline = Msg.getParamets()[1];
-				for ( size_t i = 2; i < Msg.getParamets().size(); i++ )
+				std::string sendline = ":" + user.getNickName() + " PRIVMSG";
+				for ( size_t i = 1; i < Msg.getParamets().size(); i++ )
 					sendline += " " +  Msg.getParamets()[i];
 				SendMessage(*(_UsersCheck.at(Reseivers.front())), sendline);
 				if (this->_UsersCheck.at(Reseivers.front())->getMessageAway().size() > 0)
 				{
 					SendMessage(user, CmdMess(*(_UsersCheck.at(Reseivers.front())), RPL_AWAY, Reseivers.front(), this->_UsersCheck.at(Reseivers.front())->getMessageAway(), "", "", "", "", ""));
 				}
-/*
+
 			}
 		}
 		
 		else
 			return (PrintError(Reseivers.front(), "", ERR_NOSUCHNICK, user));
-			*/
+			
 	}
 	// if ()
 //		return (ERR_WILDTOPLEVEL);
@@ -160,7 +160,7 @@ std::string		Server::WhoWasCommand(Message &Msg, User &user) {
 
 	int	NumberMess = 0;
 	if (Msg.getParamets().size() == 2) {
-		NumberMess = atoi(Msg.getParamets()[1].c_str);
+		NumberMess = atoi(Msg.getParamets()[1].c_str());
 	}
 	int	NumIter = 0;
 	for (; ResultSearch.size() > 0; ResultSearch.pop()) {
@@ -171,4 +171,5 @@ std::string		Server::WhoWasCommand(Message &Msg, User &user) {
 	}
 	
 	return (CmdMess(user, RPL_ENDOFWHOWAS, Msg.getMessage()[0], "", "", "", "", "", "",""));
-}*/
+}
+*/

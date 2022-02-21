@@ -6,7 +6,7 @@
 /*   By: nagrivan <nagrivan@21-school.ru>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/07 19:29:59 by eoddish           #+#    #+#             */
-/*   Updated: 2022/02/19 21:06:34 by eoddish          ###   ########.fr       */
+/*   Updated: 2022/02/21 16:32:46 by eoddish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -141,6 +141,11 @@ std::string Server::parse( std::string str, User & user ) {
 		return res; 
 	}
 	msg.setCommand( vct[0] );
+	if ( vct[0] != "pass" && vct[0] != "nick" && vct[0] != "user" ) {
+		if ( !user.getStatusRegistr() ) {
+			return PrintError( user.getNickName(), "", ERR_NOTREGISTERED, user );
+		}
+	}
 	return (this->*_functions[vct[0]])( msg, user );
 }
 
@@ -236,7 +241,17 @@ void Server::ft_socket() {
 			if ( fds[i].revents == 0 )
 				continue;
 
-			if ( fds[i].revents != POLLIN ) {
+			if ( !(fds[i].revents &  POLLIN) ) {
+
+				/*if ( fds[i].revents & POLLHUP )
+					std::cout << "POLLHUP" << std::endl;
+				if ( fds[i].revents & POLLNVAL )
+					std::cout << "POLLNVAL" << std::endl;
+				if ( fds[i].revents & POLLERR )
+					std::cout << "POLLERR" << std::endl;
+				if ( fds[i].revents & POLLIN )
+					std::cout << "POLLIN" << std::endl;
+					*/
 
 				std::cout << "Error: revents is not POLLIN!" << std::endl;
 				end_server = true;
@@ -307,13 +322,21 @@ void Server::ft_socket() {
 
 					while ( std::getline( iss, str ) ) {
 
-					str.erase( str.end() - 1 );
+					if ( !str.empty() && *(str.end() - 1) == '\r' )
+						str.erase( str.end() - 1 );
 					std::cout << "recv: " << str << std::endl;
 					
-					std::string sendline = parse( str, *_users[fds[i].fd] );
+					std::string sendline;
 
-					// quit command called
-					if ( sendline == "quit" ) {
+						sendline = parse( str, *_users[fds[i].fd] );
+
+					// an error or quit command called
+					int err = 0;
+					if ( sendline.size() >= 12 ) {
+						err = std::atoi( sendline.substr( 0, 3 ).c_str() );
+					}
+					//std::cout << "*" << err << "*" << std::endl;
+					if ( sendline == "quit" || (err >= 433 && err <= 441)) {
 	
 						std::cout << "Connection closed" << std::endl;
 						close_conn = true;
@@ -348,9 +371,11 @@ void Server::ft_socket() {
 				// clean closed connection
 				if ( close_conn ) {
 
-					_UsersCheck[_users[fds[i].fd]->getNickName()]->setStatusOnline( false );
-					_UsersCheck[_users[fds[i].fd]->getNickName()]->setStatusRegistr( false );
-					_UsersCheck[_users[fds[i].fd]->getNickName()]->setStatusPass( false );
+					if ( _UsersCheck.find( _users[fds[i].fd]->getNickName() ) != _UsersCheck.end() ) {
+						_UsersCheck[_users[fds[i].fd]->getNickName()]->setStatusOnline( false );
+						_UsersCheck[_users[fds[i].fd]->getNickName()]->setStatusRegistr( false );
+						_UsersCheck[_users[fds[i].fd]->getNickName()]->setStatusPass( false );
+					}
 					_users.erase( fds[i].fd );
 
 					
@@ -471,9 +496,7 @@ void Server::ft_config( ) {
 
 bool	SendMessage(User &user,std::string Mess) {
 
-	std::string sendline;
-	sendline = ":" + user.getNickName() + " ";
-	sendline += "PRIVMSG " + Mess; 
+	std::string sendline = Mess;
 	sendline.append ( "\r\n" );
 
 					char buf2[512];
@@ -481,7 +504,7 @@ bool	SendMessage(User &user,std::string Mess) {
 					strcpy( buf2, sendline.data() );
 
 
-	std::cout << "#" << user.getFd() << "#" << sendline << "#";
+	std::cout << "send: " << sendline;
 	if (Mess.size() > 0)
 		send(user.getFd(), buf2, sendline.size(), 0);
 	return true;

@@ -6,7 +6,7 @@
 /*   By: nagrivan <nagrivan@21-school.ru>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/08 14:56:39 by nagrivan          #+#    #+#             */
-/*   Updated: 2022/02/19 14:37:38 by eoddish          ###   ########.fr       */
+/*   Updated: 2022/02/21 17:03:06 by eoddish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -121,6 +121,8 @@ std::string		Server::UserCommand(Message &Msg, User &user) {
 	else if (user.getStatusRegistr() == true)
 		return (PrintError("" , "", ERR_ALREADYREGISTRED, user ));
 	user.setUserName(Msg.getParamets()[1]);
+//	user.setHostName(Msg.getParamets()[2]);
+//	user.setServerName(Msg.getParamets()[3]);
 	std::string realname;
 
 	realname = Msg.getParamets()[4];
@@ -139,9 +141,9 @@ std::string		Server::UserCommand(Message &Msg, User &user) {
 
 	std::string result;
 	result = "001 " + user.getNickName() + " :Welcome to the Internet Relay Network " + user.getNickName() + "\r\n";
-	result += ":ircserv 002 eoddish :Your host is ircserv, running version 1.0\r\n";
-	result += ":ircserv 003 eoddish :This server was created <date>\r\n";
-	result +=":ircserv 004 eoddish :ircserv 1.0 <available user modes> <available channel modes>";
+	result += ":ircserv 002 " + user.getNickName() + " :Your host is ircserv, running version 1.0\r\n";
+	result += ":ircserv 003 " + user.getNickName() + " :This server was created <date>\r\n";
+	result +=":ircserv 004 " + user.getNickName() + " :ircserv 1.0 <available user modes> <available channel modes>";
 
 
 

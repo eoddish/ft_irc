@@ -6,7 +6,7 @@
 /*   By: nagrivan <nagrivan@21-school.ru>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/10 15:43:36 by nagrivan          #+#    #+#             */
-/*   Updated: 2022/02/19 15:13:45 by eoddish          ###   ########.fr       */
+/*   Updated: 2022/02/21 17:29:49 by eoddish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,6 +28,7 @@ Channel&	Channel::operator= (const Channel &copy) {
 		this->_OperatorChannel = copy._OperatorChannel;
 		this->_Users = copy._Users;
 	}
+	return *this;
 }
 
 std::string	Channel::getNameChannel(void) const {
@@ -97,21 +98,21 @@ std::string 	Channel::PrintUsers(void) {
 
 	std::map<std::string, User *>::iterator UserBeg = this->_Users.begin();
 	std::map<std::string, User *>::iterator UserEnd = this->_Users.end();
-	for (; UserBeg != UserEnd; UserBeg++) {
+	for (; UserBeg != UserEnd; ) {
 		StrUsers += "[ ";
 		if (this->CheckOperator((*UserBeg).first) == true)
 			StrUsers += "@";
 		if (this->CheckSpeakers((*UserBeg).first) == true)
 			StrUsers += "+";
 		StrUsers += (*UserBeg).first + "]";
-		if ((UserBeg + 1) != UserEnd)
+		if ((++UserBeg) != UserEnd)
 			StrUsers += " ";
 	}
 	return (StrUsers);
 }
 
-void	Channel::pushOperator(const User &NewOper) {
-	this->_OperatorChannel.push_back(NewOper);
+void	Channel::pushOperator(User &NewOper) {
+	this->_OperatorChannel.push_back(&NewOper);
 }
 
 void	Channel::popOperator(std::string Name) {
@@ -129,7 +130,7 @@ void	Channel::popOperator(std::string Name) {
 }
 
 void	Channel::pushUser(std::string Key, User &NewUser) {
-	this->_Users.insert(Key, NewUser);
+	this->_Users[Key] = &NewUser;
 }
 
 void	Channel::popUser(std::string Name) {
@@ -138,8 +139,8 @@ void	Channel::popUser(std::string Name) {
 	this->_Users.erase(Name);
 }
 
-void	Channel::pushSpeaker(const User &NewSpeak) {
-	this->_SpeakersUser.push_back(NewSpeak);
+void	Channel::pushSpeaker(User &NewSpeak) {
+	this->_SpeakersUser.push_back(&NewSpeak);
 }
 
 void	Channel::popSpeaker(std::string Name) {
@@ -217,13 +218,13 @@ void	Channel::SendUsers(std::string Command, std::string Mess, User &user) {
 	
 	for (; UserBeg != UserEnd; ++UserBeg) {
 		if (Command != "NOTICE") {
-			SendMessage((*UserBeg).second, Mess);
-			if ((*UserBeg).second->getMessageAway().size > 0)
-				SendMessage(user, CmdMess((*UserBeg).second, RPL_AWAY, (*UserBeg).first, (*UserBeg).second->getMessageAway(), "", "", "", "", ""));	
+			SendMessage(*((*UserBeg).second), Mess);
+			if ((*UserBeg).second->getMessageAway().size() > 0)
+				SendMessage(user, CmdMess(*((*UserBeg).second), RPL_AWAY, (*UserBeg).first, (*UserBeg).second->getMessageAway(), "", "", "", "", ""));	
 		}
 		else {
 			if ((*UserBeg).second->CheckUserFlags('s') == false)
-				SendMessage((*UserBeg).second, Mess);
+				SendMessage(*((*UserBeg).second), Mess);
 		}
 	}
 }
