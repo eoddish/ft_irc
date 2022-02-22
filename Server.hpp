@@ -6,7 +6,7 @@
 /*   By: nagrivan <nagrivan@21-school.ru>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/07 19:27:07 by eoddish           #+#    #+#             */
-/*   Updated: 2022/02/19 21:06:32 by eoddish          ###   ########.fr       */
+/*   Updated: 2022/02/22 21:49:30 by eoddish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,6 +70,7 @@ private:
 	std::map<std::string, User *>		_IRC_operator;
 	std::map< int, User *> 				_users;
 	std::map< std::string, std::string> _opers;
+	std::map< std::string, std::ifstream*> _streams;
 
 	//History								_HistoryUser;
 	
@@ -112,6 +113,12 @@ private:
 	void ft_config();
 
 	std::queue<std::string>	ListMaskUser(std::string Mask, bool Param);
+
+	// DCC commands
+	std::string commandDcc(Message &msg,User &user );
+	std::string commandDccSend(Message &msg,User &user);
+	std::string commandDccGet(Message &msg,User &user);
+
 };
 
 bool	SendMessage(User &user,std::string Mess);

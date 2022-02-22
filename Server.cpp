@@ -6,7 +6,7 @@
 /*   By: nagrivan <nagrivan@21-school.ru>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/07 19:29:59 by eoddish           #+#    #+#             */
-/*   Updated: 2022/02/21 16:32:46 by eoddish          ###   ########.fr       */
+/*   Updated: 2022/02/22 21:49:25 by eoddish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,6 +25,7 @@ Server::Server( ) : _port( 0 ), _password( "default" ), _name( "ircserv" ) {
 	_functions["oper"] = &Server::OperCommand;
 	_functions["quit"] = &Server::QuitCommand;
 	_functions["privmsg"] = &Server::PrivmsgCommand;
+	_functions["dcc"] = &Server::commandDcc;
 	
 	//_functions["join"] = &Server::JoinCommand;
 
@@ -452,6 +453,44 @@ std::string & Server::ft_tolower( std::string & str ) {
 
 	return str;
 }
+
+std::string Server::commandDcc( Message &msg,User &user) {
+
+	if ( msg.getParamets()[1] == "send" )
+		return commandDccSend(msg, user);
+	else if ( msg.getParamets()[1] == "get" )
+		return commandDccGet(msg, user);
+	return("");
+}
+
+std::string Server::commandDccSend(Message &msg,User &user) {
+
+	(void)user;
+	std::string nick = msg.getParamets()[2];	
+	std::ifstream ifs(msg.getParamets()[3], std::ifstream::in);
+	_streams[user.getNickName()] = &ifs;
+ 
+	return ("DCC SEND request sent to " + nick);
+}
+
+std::string Server::commandDccGet(Message &msg,User &user) {
+
+	(void)user;
+	std::ofstream ofs;
+	ofs.open("abcdef.txt");
+	if (!ofs.is_open() ) {
+		std::cout << "Failed to open" << std::endl;
+		return ("");
+	}
+	ofs << *_streams[_UsersCheck[msg.getParamets()[2]]->getNickName()];
+	//ofs < ifs; 
+	ofs.close();
+	//ifs.close();
+	
+	return ("DCC received file");
+}
+
+
 
 void Server::ft_config( ) {
 
