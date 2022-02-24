@@ -6,7 +6,7 @@
 /*   By: nagrivan <nagrivan@21-school.ru>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/07 19:29:59 by eoddish           #+#    #+#             */
-/*   Updated: 2022/02/22 21:49:25 by eoddish          ###   ########.fr       */
+/*   Updated: 2022/02/24 20:08:20 by eoddish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -469,6 +469,11 @@ std::string Server::commandDccSend(Message &msg,User &user) {
 	std::string nick = msg.getParamets()[2];	
 	std::ifstream ifs(msg.getParamets()[3], std::ifstream::in);
 	_streams[user.getNickName()] = &ifs;
+	std::string strname = msg.getParamets()[3];
+	int len =  strname.size() - strname.rfind("/") - 1;
+	strname = strname.substr( strname.rfind( "/") + 1, len);
+	std::cout << "#" << strname;
+	_streamNames[user.getNickName()] = strname;
  
 	return ("DCC SEND request sent to " + nick);
 }
@@ -477,7 +482,8 @@ std::string Server::commandDccGet(Message &msg,User &user) {
 
 	(void)user;
 	std::ofstream ofs;
-	ofs.open("abcdef.txt");
+	std::cout << _streamNames[user.getNickName()] << std::cout;
+	ofs.open(_streamNames[user.getNickName()]);
 	if (!ofs.is_open() ) {
 		std::cout << "Failed to open" << std::endl;
 		return ("");

@@ -6,7 +6,7 @@
 /*   By: nagrivan <nagrivan@21-school.ru>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/07 19:27:07 by eoddish           #+#    #+#             */
-/*   Updated: 2022/02/22 21:49:30 by eoddish          ###   ########.fr       */
+/*   Updated: 2022/02/24 19:04:06 by eoddish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,6 +71,7 @@ private:
 	std::map< int, User *> 				_users;
 	std::map< std::string, std::string> _opers;
 	std::map< std::string, std::ifstream*> _streams;
+	std::map< std::string, std::string> _streamNames;
 
 	//History								_HistoryUser;
 	
