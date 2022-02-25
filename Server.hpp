@@ -6,7 +6,7 @@
 /*   By: nagrivan <nagrivan@21-school.ru>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/07 19:27:07 by eoddish           #+#    #+#             */
-/*   Updated: 2022/02/24 19:04:06 by eoddish          ###   ########.fr       */
+/*   Updated: 2022/02/25 21:59:35 by eoddish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,8 +70,9 @@ private:
 	std::map<std::string, User *>		_IRC_operator;
 	std::map< int, User *> 				_users;
 	std::map< std::string, std::string> _opers;
-	std::map< std::string, std::ifstream*> _streams;
+	std::map< std::string, std::string> _streams;
 	std::map< std::string, std::string> _streamNames;
+	std::map< std::string, std::string> _streamUsers;
 
 	//History								_HistoryUser;
 	

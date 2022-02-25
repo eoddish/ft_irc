@@ -6,7 +6,7 @@
 /*   By: nagrivan <nagrivan@21-school.ru>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/07 19:29:59 by eoddish           #+#    #+#             */
-/*   Updated: 2022/02/24 20:08:20 by eoddish          ###   ########.fr       */
+/*   Updated: 2022/02/25 22:06:05 by eoddish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -467,33 +467,46 @@ std::string Server::commandDccSend(Message &msg,User &user) {
 
 	(void)user;
 	std::string nick = msg.getParamets()[2];	
-	std::ifstream ifs(msg.getParamets()[3], std::ifstream::in);
-	_streams[user.getNickName()] = &ifs;
+	std::ifstream ifs(msg.getParamets()[3], std::ifstream::binary);
+	if ( !ifs.is_open() )
+		return ( msg.getParamets()[3] + ": No such file or directory");
+
 	std::string strname = msg.getParamets()[3];
 	int len =  strname.size() - strname.rfind("/") - 1;
 	strname = strname.substr( strname.rfind( "/") + 1, len);
-	std::cout << "#" << strname;
-	_streamNames[user.getNickName()] = strname;
- 
-	return ("DCC SEND request sent to " + nick);
+	_streamNames[nick] = strname;
+	_streamUsers[nick] = user.getNickName();
+
+	char c;
+	while ( ifs.get(c) ) {
+		_streams[nick].push_back(c);
+	}
+	SendMessage( *_UsersCheck[nick], "DCC SEND from " + user.getNickName() ); 
+	return ("DCC SEND request sent to " + nick + ": " + strname);
 }
 
 std::string Server::commandDccGet(Message &msg,User &user) {
 
-	(void)user;
+	(void)msg;
 	std::ofstream ofs;
-	std::cout << _streamNames[user.getNickName()] << std::cout;
-	ofs.open(_streamNames[user.getNickName()]);
+	if ( _streamNames.find( user.getNickName() ) == _streamNames.end() )
+		return ("");
+	ofs.open(_streamNames[user.getNickName()], std::ofstream::binary);
 	if (!ofs.is_open() ) {
 		std::cout << "Failed to open" << std::endl;
 		return ("");
 	}
-	ofs << *_streams[_UsersCheck[msg.getParamets()[2]]->getNickName()];
-	//ofs < ifs; 
-	ofs.close();
-	//ifs.close();
+
+	std::string str = _streamNames[user.getNickName()];
+	std::string sender = _streamUsers[user.getNickName()];
 	
-	return ("DCC received file");
+	ofs << _streams[user.getNickName()];
+	_streams.erase(user.getNickName());
+	_streamNames.erase(user.getNickName());
+	_streamUsers.erase(user.getNickName());
+	
+	SendMessage( *_UsersCheck[sender], "DCC sent file " + str + " for " + user.getNickName() ); 
+	return ("DCC received file " + str + " from " + _UsersCheck[sender]->getNickName());
 }
 
 
