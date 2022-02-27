@@ -6,7 +6,7 @@
 /*   By: nagrivan <nagrivan@21-school.ru>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/07 19:29:59 by eoddish           #+#    #+#             */
-/*   Updated: 2022/02/26 21:21:53 by eoddish          ###   ########.fr       */
+/*   Updated: 2022/02/27 21:05:03 by eoddish          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -469,7 +469,7 @@ std::string Server::commandDccSend(Message &msg,User &user) {
 	std::string nick = msg.getParamets()[2];	
 	std::ifstream ifs(msg.getParamets()[3], std::ifstream::binary);
 
-	ret = recv( fds[i].fd, buf, sizeof( buf ), 0 );
+//	ret = recv( fds[i].fd, buf, sizeof( buf ), 0 );
 	if ( !ifs.is_open() )
 		return ( msg.getParamets()[3] + ": No such file or directory");
 
